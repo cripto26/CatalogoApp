@@ -1,12 +1,13 @@
 package com.quirozsolutions.catalogo1boton.infra.pdf
 
-
 import android.content.Context
-import android.graphics.*
+import android.graphics.Paint
+import android.graphics.Typeface
 import android.graphics.pdf.PdfDocument
 import com.quirozsolutions.catalogo1boton.domain.model.CatalogTemplate
 import com.quirozsolutions.catalogo1boton.domain.model.Product
 import com.quirozsolutions.catalogo1boton.infra.files.ImageStore
+import com.quirozsolutions.catalogo1boton.infra.pdf.templates.TemplateRegistry
 import java.io.File
 import java.io.FileOutputStream
 import java.text.NumberFormat
@@ -34,7 +35,9 @@ class PdfCatalogGenerator(
         var index = 0
         var pageNumber = 1
 
-        // Portada opcional (según propuesta)
+        val tpl = TemplateRegistry.resolve(template)
+
+        // Portada opcional
         if (!businessTitle.isNullOrBlank() || !contactLine.isNullOrBlank()) {
             val pageInfo = PdfDocument.PageInfo.Builder(pageW, pageH, pageNumber++).create()
             val page = doc.startPage(pageInfo)
@@ -52,36 +55,15 @@ class PdfCatalogGenerator(
             doc.finishPage(page)
         }
 
-        val perPage = when (template) {
-            CatalogTemplate.MINIMALISTA -> 6
-            CatalogTemplate.PROMOCIONAL -> 4
-            CatalogTemplate.COMPACTA -> 9
-        }
+        val perPage = tpl.itemsPerPage()
+        val cols = tpl.columns()
 
         while (index < products.size) {
             val pageInfo = PdfDocument.PageInfo.Builder(pageW, pageH, pageNumber++).create()
             val page = doc.startPage(pageInfo)
             val canvas = page.canvas
 
-            val paintText = Paint(Paint.ANTI_ALIAS_FLAG).apply { textSize = 12f }
-            val paintPrice = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-                textSize = 14f
-                typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-            }
-            val border = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-                style = Paint.Style.STROKE
-                strokeWidth = 1f
-                color = Color.LTGRAY
-            }
-
             val items = products.subList(index, minOf(index + perPage, products.size))
-
-            // Layout simple por grilla
-            val cols = when (template) {
-                CatalogTemplate.MINIMALISTA -> 2
-                CatalogTemplate.PROMOCIONAL -> 1
-                CatalogTemplate.COMPACTA -> 3
-            }
             val rows = (items.size + cols - 1) / cols
 
             val margin = 24
@@ -94,24 +76,24 @@ class PdfCatalogGenerator(
 
                 val left = margin + col * cellW
                 val top = margin + row * cellH
-                val rect = Rect(left, top, left + cellW - 8, top + cellH - 8)
 
-                canvas.drawRect(rect, border)
+                // el -8 lo conservamos para no pegar al borde
+                val rect = android.graphics.Rect(left, top, left + cellW - 8, top + cellH - 8)
 
-                // Imagen
-                val bmp = imageStore.loadBitmap(p.imagePath, maxSidePx = if (template == CatalogTemplate.PROMOCIONAL) 1200 else 700)
-                val imgRect = Rect(rect.left + 10, rect.top + 10, rect.right - 10, rect.top + (rect.height() * 0.6f).toInt())
-                if (bmp != null) {
-                    canvas.drawBitmap(bmp, null, imgRect, null)
-                }
+                val bmp = imageStore.loadBitmap(
+                    p.imagePath,
+                    maxSidePx = tpl.imageMaxSidePx()
+                )
 
-                // Texto
                 val price = money.format(p.priceCents / 100.0)
-                val desc = (p.description ?: "").take(120)
 
-                val textY = imgRect.bottom + 18f
-                canvas.drawText(price, rect.left + 10f, textY, paintPrice)
-                canvas.drawText(desc, rect.left + 10f, textY + 18f, paintText)
+                tpl.drawItem(
+                    canvas = canvas,
+                    rect = rect,
+                    product = p,
+                    image = bmp,
+                    priceText = price
+                )
             }
 
             doc.finishPage(page)
