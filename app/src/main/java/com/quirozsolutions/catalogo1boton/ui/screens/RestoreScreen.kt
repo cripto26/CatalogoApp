@@ -19,22 +19,55 @@ import java.io.File
 fun RestoreScreen(container: AppContainer, onBack: () -> Unit) {
     val ctx = LocalContext.current
     val scope = rememberCoroutineScope()
+
     var status by remember { mutableStateOf("Selecciona un ZIP de backup...") }
+    var loading by remember { mutableStateOf(false) }
 
     val picker = rememberLauncherForActivityResult(GetContent()) { uri: Uri? ->
         if (uri == null) return@rememberLauncherForActivityResult
         scope.launch {
-            status = "Restaurando..."
+            loading = true
+            status = "Restaurando desde archivo..."
             try {
                 val tmp = File(ctx.cacheDir, "import_backup.zip")
                 ctx.contentResolver.openInputStream(uri).use { input ->
                     requireNotNull(input)
-                    tmp.outputStream().use { input.copyTo(it) }
+                    tmp.outputStream().use { output -> input.copyTo(output) }
                 }
                 container.restoreManager.restoreFromZip(tmp)
-                status = "✅ Restauración completa"
+                status = "✅ Restauración completa (archivo)"
             } catch (e: Exception) {
                 status = "❌ Error: ${e.message}"
+            } finally {
+                loading = false
+            }
+        }
+    }
+
+    fun restoreFromDrive() {
+        scope.launch {
+            loading = true
+            status = "Buscando backup en Google Drive..."
+            try {
+                val account = container.authManager.lastSignedInAccount()
+                    ?: throw IllegalStateException("No hay sesión iniciada con Google")
+
+                // Por defecto: busca en Mi unidad
+                val sharedFolderId: String? = null
+
+                val zip = container.driveSyncManager.downloadLatestBackup(
+                    account = account,
+                    sharedFolderId = sharedFolderId
+                ) ?: throw IllegalStateException("No se encontró backup en Drive")
+
+                status = "Restaurando desde Google Drive..."
+                container.restoreManager.restoreFromZip(zip)
+
+                status = "✅ Restauración completa (Drive)"
+            } catch (e: Exception) {
+                status = "❌ Error: ${e.message}"
+            } finally {
+                loading = false
             }
         }
     }
@@ -42,12 +75,34 @@ fun RestoreScreen(container: AppContainer, onBack: () -> Unit) {
     Scaffold(topBar = { TopAppBar(title = { Text("Restaurar") }) }) { padding ->
         Column(Modifier.padding(padding).padding(16.dp)) {
             Text(status)
+
             Spacer(Modifier.height(12.dp))
-            Button(onClick = { picker.launch("application/zip") }, modifier = Modifier.fillMaxWidth()) {
+
+            Button(
+                onClick = { picker.launch("application/zip") },
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !loading
+            ) {
                 Text("Elegir backup ZIP")
             }
+
             Spacer(Modifier.height(8.dp))
-            TextButton(onClick = onBack, modifier = Modifier.fillMaxWidth()) { Text("Volver") }
+
+            Button(
+                onClick = { restoreFromDrive() },
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !loading
+            ) {
+                Text("Restaurar desde Google Drive")
+            }
+
+            Spacer(Modifier.height(8.dp))
+
+            TextButton(
+                onClick = onBack,
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !loading
+            ) { Text("Volver") }
         }
     }
 }

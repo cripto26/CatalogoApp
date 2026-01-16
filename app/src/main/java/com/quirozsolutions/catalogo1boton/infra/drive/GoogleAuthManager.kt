@@ -1,15 +1,18 @@
 package com.quirozsolutions.catalogo1boton.infra.drive
 
 import android.content.Context
-import com.google.android.gms.auth.api.signin.*
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.Scope
 import com.google.api.services.drive.DriveScopes
 
 class GoogleAuthManager(private val context: Context) {
 
-    // Guardar backup en la carpeta oculta de la app en Drive (appDataFolder)
+    // Solución A: archivos visibles creados/gestionados por tu app
     private val scopes = listOf(
-        Scope(DriveScopes.DRIVE_APPDATA)
+        Scope(DriveScopes.DRIVE_FILE)
     )
 
     fun signInClient(): GoogleSignInClient {
@@ -17,6 +20,7 @@ class GoogleAuthManager(private val context: Context) {
             .requestEmail()
             .requestScopes(scopes.first(), *scopes.drop(1).toTypedArray())
             .build()
+
         return GoogleSignIn.getClient(context, gso)
     }
 

@@ -62,22 +62,17 @@ fun AppNav(container: AppContainer) {
                 container = container,
                 onBack = { nav.popBackStack() },
                 syncNow = { clientName, sharedFolderId ->
-                    // 1) Crear backup ZIP local
                     val zip = container.backupManager.buildLatestBackup(clientName)
 
-                    // 2) Subir a Drive (requiere sesión)
                     val account = container.authManager.lastSignedInAccount()
                         ?: throw IllegalStateException("No hay sesión iniciada")
 
-                    // Drive appDataFolder (recomendado)
                     container.driveSyncManager.uploadLatestBackup(
                         account = account,
-                        backupZip = zip
+                        backupZip = zip,
+                        clientName = clientName,
+                        sharedFolderId = sharedFolderId
                     )
-
-                    // sharedFolderId queda sin uso si usas appDataFolder
-                    @Suppress("UNUSED_VARIABLE")
-                    val _ignore = sharedFolderId
                 }
             )
         }

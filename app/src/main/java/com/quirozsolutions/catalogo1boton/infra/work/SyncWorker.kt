@@ -3,8 +3,8 @@ package com.quirozsolutions.catalogo1boton.infra.work
 import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.quirozsolutions.catalogo1boton.App
 import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.quirozsolutions.catalogo1boton.App
 
 class SyncWorker(
     appContext: Context,
@@ -13,26 +13,27 @@ class SyncWorker(
 
     override suspend fun doWork(): Result {
         val app = applicationContext as App
-        val client = inputData.getString(KEY_CLIENT).orEmpty()
+
+        val clientName = inputData.getString(KEY_CLIENT).orEmpty()
         val sharedFolderId = inputData.getString(KEY_SHARED_FOLDER_ID)?.takeIf { it.isNotBlank() }
 
-        if (client.isBlank()) return Result.failure()
+        if (clientName.isBlank()) return Result.failure()
 
-        // 1) Construir backup latest (local)
-        val backupZip = app.container.backupManager.buildLatestBackup(client)
-
-        // 2) Subir a Drive (si hay sesión)
         val account = GoogleSignIn.getLastSignedInAccount(applicationContext)
             ?: return Result.retry()
 
         return try {
+            val zip = app.container.backupManager.buildLatestBackup(clientName)
+
             app.container.driveSyncManager.uploadLatestBackup(
                 account = account,
-                backupZip = backupZip,
-
+                backupZip = zip,
+                clientName = clientName,
+                sharedFolderId = sharedFolderId
             )
+
             Result.success()
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             Result.retry()
         }
     }
