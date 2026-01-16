@@ -72,12 +72,20 @@ fun GenerateCatalogScreen(container: AppContainer, onBack: () -> Unit) {
 
 @Composable
 private fun TemplatePicker(template: CatalogTemplate, onChange: (CatalogTemplate) -> Unit) {
+    val labels = mapOf(
+        CatalogTemplate.MINIMALISTA to "Minimalista",
+        CatalogTemplate.PROMOCIONAL to "Promocional",
+        CatalogTemplate.COMPACTA to "Compacta",
+        CatalogTemplate.ELEGANTE to "Elegante"
+    )
+
     Column {
         CatalogTemplate.values().forEach { t ->
             Row {
                 RadioButton(selected = (template == t), onClick = { onChange(t) })
-                Text(t.name)
+                Text(labels[t] ?: t.name)
             }
         }
     }
 }
+
