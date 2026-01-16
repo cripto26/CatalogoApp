@@ -29,8 +29,7 @@ class SyncWorker(
             app.container.driveSyncManager.uploadLatestBackup(
                 account = account,
                 backupZip = backupZip,
-                clientName = client,
-                sharedFolderId = sharedFolderId
+
             )
             Result.success()
         } catch (e: Exception) {
