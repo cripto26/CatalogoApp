@@ -1,13 +1,11 @@
 package com.quirozsolutions.catalogo1boton.infra.pdf
 
 import android.content.Context
-import android.graphics.Paint
-import android.graphics.Typeface
+import android.graphics.*
 import android.graphics.pdf.PdfDocument
-import com.quirozsolutions.catalogo1boton.domain.model.CatalogTemplate
+import androidx.annotation.WorkerThread
 import com.quirozsolutions.catalogo1boton.domain.model.Product
 import com.quirozsolutions.catalogo1boton.infra.files.ImageStore
-import com.quirozsolutions.catalogo1boton.infra.pdf.templates.TemplateRegistry
 import java.io.File
 import java.io.FileOutputStream
 import java.text.NumberFormat
@@ -17,91 +15,143 @@ class PdfCatalogGenerator(
     private val context: Context,
     private val imageStore: ImageStore
 ) {
+    private val pageW = 595
+    private val pageH = 842
+
     private val money = NumberFormat.getCurrencyInstance(Locale("es", "CO"))
 
-    fun generate(
+    @WorkerThread
+    fun generateWithPngTemplate(
         products: List<Product>,
-        template: CatalogTemplate,
-        businessTitle: String?,
-        contactLine: String?
+        pageAssetPath: String,
+        slots: List<Rect>,
+        debugDrawSlots: Boolean = false
     ): File {
         val outDir = File(context.filesDir, "catalogs").apply { mkdirs() }
         val outFile = File(outDir, "catalog_${System.currentTimeMillis()}.pdf")
 
         val doc = PdfDocument()
-        val pageW = 595  // A4 aprox (pt)
-        val pageH = 842
+        val bg = loadAssetBitmap(pageAssetPath)
 
-        var index = 0
+        val perPage = slots.size
+        var idx = 0
         var pageNumber = 1
 
-        val tpl = TemplateRegistry.resolve(template)
-
-        // Portada opcional
-        if (!businessTitle.isNullOrBlank() || !contactLine.isNullOrBlank()) {
-            val pageInfo = PdfDocument.PageInfo.Builder(pageW, pageH, pageNumber++).create()
-            val page = doc.startPage(pageInfo)
-            val c = page.canvas
-
-            val titlePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-                textSize = 28f
-                typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-            }
-            val subPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { textSize = 16f }
-
-            c.drawText(businessTitle ?: "Catálogo", 40f, 120f, titlePaint)
-            if (!contactLine.isNullOrBlank()) c.drawText(contactLine, 40f, 160f, subPaint)
-
-            doc.finishPage(page)
-        }
-
-        val perPage = tpl.itemsPerPage()
-        val cols = tpl.columns()
-
-        while (index < products.size) {
+        while (idx < products.size) {
             val pageInfo = PdfDocument.PageInfo.Builder(pageW, pageH, pageNumber++).create()
             val page = doc.startPage(pageInfo)
             val canvas = page.canvas
 
-            val items = products.subList(index, minOf(index + perPage, products.size))
-            val rows = (items.size + cols - 1) / cols
+            // Fondo
+            if (bg != null) {
+                canvas.drawBitmap(bg, null, Rect(0, 0, pageW, pageH), null)
+            } else {
+                canvas.drawColor(Color.WHITE)
+            }
 
-            val margin = 24
-            val cellW = (pageW - margin * 2) / cols
-            val cellH = (pageH - margin * 2) / maxOf(rows, 1)
+            // Debug slots (bordes rojos)
+            if (debugDrawSlots) {
+                val dbgPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                    style = Paint.Style.STROKE
+                    strokeWidth = 2f
+                    color = Color.RED
+                }
+                slots.forEach { canvas.drawRect(it, dbgPaint) }
+            }
 
-            items.forEachIndexed { i, p ->
-                val col = i % cols
-                val row = i / cols
+            val slice = products.subList(idx, minOf(idx + perPage, products.size))
 
-                val left = margin + col * cellW
-                val top = margin + row * cellH
-
-                // el -8 lo conservamos para no pegar al borde
-                val rect = android.graphics.Rect(left, top, left + cellW - 8, top + cellH - 8)
-
-                val bmp = imageStore.loadBitmap(
-                    p.imagePath,
-                    maxSidePx = tpl.imageMaxSidePx()
-                )
+            slice.forEachIndexed { i, p ->
+                val slot = slots[i]
+                val bmp = imageStore.loadBitmap(p.imagePath, maxSidePx = 1400)
 
                 val price = money.format(p.priceCents / 100.0)
+                val name = (p.description ?: p.id).trim()
 
-                tpl.drawItem(
+                drawProductCard(
                     canvas = canvas,
-                    rect = rect,
-                    product = p,
+                    slot = slot,
                     image = bmp,
-                    priceText = price
+                    priceText = price,
+                    nameText = name
                 )
             }
 
             doc.finishPage(page)
-            index += perPage
+            idx += perPage
         }
 
         FileOutputStream(outFile).use { doc.writeTo(it) }
         doc.close()
         return outFile
+    }
+
+    private fun drawProductCard(
+        canvas: Canvas,
+        slot: Rect,
+        image: Bitmap?,
+        priceText: String,
+        nameText: String
+    ) {
+        // Deja un pequeño padding para que no toque el borde del marco del PNG
+        val pad = 12
+        val inner = Rect(slot.left + pad, slot.top + pad, slot.right - pad, slot.bottom - pad)
+
+        // Imagen arriba (zona grande)
+        val imgH = (inner.height() * 0.72f).toInt()
+        val imgRect = Rect(inner.left, inner.top, inner.right, inner.top + imgH)
+
+        // Texto abajo
+        val textRect = Rect(inner.left, imgRect.bottom + 6, inner.right, inner.bottom)
+
+        // Imagen sin deformar
+        if (image != null) {
+            drawBitmapCenterCrop(canvas, image, imgRect)
+        }
+
+        val pricePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.rgb(76, 175, 80) // verde
+            textSize = 16f
+            typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+        }
+
+        val namePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.rgb(255, 152, 0) // naranja
+            textSize = 12f
+            typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+        }
+
+        // Ajuste fino de baseline
+        canvas.drawText(priceText, textRect.left.toFloat(), (textRect.top + 18).toFloat(), pricePaint)
+        canvas.drawText(nameText.take(32), textRect.left.toFloat(), (textRect.top + 36).toFloat(), namePaint)
+    }
+
+    private fun drawBitmapCenterCrop(canvas: Canvas, bitmap: Bitmap, target: Rect) {
+        val srcW = bitmap.width
+        val srcH = bitmap.height
+        if (srcW <= 0 || srcH <= 0) return
+
+        val srcRatio = srcW.toFloat() / srcH.toFloat()
+        val dstRatio = target.width().toFloat() / target.height().toFloat()
+
+        val srcRect = if (srcRatio > dstRatio) {
+            val newW = (srcH * dstRatio).toInt()
+            val x = (srcW - newW) / 2
+            Rect(x, 0, x + newW, srcH)
+        } else {
+            val newH = (srcW / dstRatio).toInt()
+            val y = (srcH - newH) / 2
+            Rect(0, y, srcW, y + newH)
+        }
+
+        canvas.drawBitmap(bitmap, srcRect, target, null)
+    }
+
+    private fun loadAssetBitmap(assetPath: String): Bitmap? {
+        return runCatching {
+            context.assets.open(assetPath).use { input ->
+                BitmapFactory.decodeStream(input)
+            }
+        }.getOrNull()
     }
 }

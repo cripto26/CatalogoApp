@@ -8,13 +8,11 @@ import com.quirozsolutions.catalogo1boton.ui.theme.Catalogo1botonTheme
 
 class MainActivity : ComponentActivity() {
 
-    // Container para inyectar dependencias (Room, managers, etc.)
     private lateinit var container: AppContainer
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Crear el container una sola vez
         container = AppContainer(applicationContext)
 
         setContent {

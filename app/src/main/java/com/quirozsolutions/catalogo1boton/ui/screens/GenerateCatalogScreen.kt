@@ -2,7 +2,6 @@
 
 package com.quirozsolutions.catalogo1boton.ui.screens
 
-
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -10,7 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.quirozsolutions.catalogo1boton.AppContainer
-import com.quirozsolutions.catalogo1boton.domain.model.CatalogTemplate
+import com.quirozsolutions.catalogo1boton.infra.pdf.PngSlots
 import com.quirozsolutions.catalogo1boton.infra.pdf.sharePdf
 import kotlinx.coroutines.launch
 
@@ -19,73 +18,49 @@ fun GenerateCatalogScreen(container: AppContainer, onBack: () -> Unit) {
     val ctx = LocalContext.current
     val scope = rememberCoroutineScope()
 
-    var template by remember { mutableStateOf(CatalogTemplate.MINIMALISTA) }
-    var business by remember { mutableStateOf("") }
-    var contact by remember { mutableStateOf("") }
+    // ✅ DEBUG opcional: si lo pones true, el PDF dibuja bordes rojos de slots
+    var debugSlots by remember { mutableStateOf(false) }
 
-    Scaffold(topBar = { TopAppBar(title = { Text("Generar catálogo") }) }) { padding ->
-        Column(Modifier.padding(padding).padding(16.dp)) {
+    Scaffold(
+        topBar = { TopAppBar(title = { Text("Generar catálogo") }) }
+    ) { padding ->
+        Column(
+            Modifier
+                .padding(padding)
+                .padding(16.dp)
+        ) {
 
-            Text("Plantilla")
-            Spacer(Modifier.height(8.dp))
-            TemplatePicker(template = template, onChange = { template = it })
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                Text("Mostrar guías (debug)")
+                Switch(checked = debugSlots, onCheckedChange = { debugSlots = it })
+            }
 
-            Spacer(Modifier.height(16.dp))
-            OutlinedTextField(
-                value = business,
-                onValueChange = { business = it },
-                label = { Text("Nombre del negocio (opcional)") },
-                modifier = Modifier.fillMaxWidth()
-            )
             Spacer(Modifier.height(12.dp))
-            OutlinedTextField(
-                value = contact,
-                onValueChange = { contact = it },
-                label = { Text("Contacto/redes (opcional)") },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(Modifier.height(20.dp))
 
             Button(
                 onClick = {
                     scope.launch {
                         val products = container.productRepository.getAllOnce()
-                        val pdf = container.pdfGenerator.generate(
+
+                        val pdf = container.pdfGenerator.generateWithPngTemplate(
                             products = products,
-                            template = template,
-                            businessTitle = business.takeIf { it.isNotBlank() },
-                            contactLine = contact.takeIf { it.isNotBlank() }
+                            pageAssetPath = "templates/ofertas_6.png",
+                            slots = PngSlots.ofertas6(),
+                            debugDrawSlots = debugSlots
                         )
-                        // ✅ Aquí se arregla: sharePdf necesita un Context real
+
                         sharePdf(ctx, pdf)
                     }
                 },
                 modifier = Modifier.fillMaxWidth()
-            ) { Text("Generar y compartir PDF (1 botón)") }
+            ) {
+                Text("Generar PDF (Plantilla PNG: Ofertas 6)")
+            }
 
             Spacer(Modifier.height(8.dp))
-            TextButton(onClick = onBack, modifier = Modifier.fillMaxWidth()) { Text("Volver") }
-        }
-    }
-}
-
-@Composable
-private fun TemplatePicker(template: CatalogTemplate, onChange: (CatalogTemplate) -> Unit) {
-    val labels = mapOf(
-        CatalogTemplate.MINIMALISTA to "Minimalista",
-        CatalogTemplate.PROMOCIONAL to "Promocional",
-        CatalogTemplate.COMPACTA to "Compacta",
-        CatalogTemplate.ELEGANTE to "Elegante"
-    )
-
-    Column {
-        CatalogTemplate.values().forEach { t ->
-            Row {
-                RadioButton(selected = (template == t), onClick = { onChange(t) })
-                Text(labels[t] ?: t.name)
+            TextButton(onClick = onBack, modifier = Modifier.fillMaxWidth()) {
+                Text("Volver")
             }
         }
     }
 }
-

@@ -22,10 +22,8 @@ fun AppNav(container: AppContainer) {
         composable(Routes.PRODUCTS) {
             ProductListScreen(
                 container = container,
-                onAdd = { nav.navigate(Routes.PRODUCT_FORM) },
-                onEdit = { productId ->
-                    nav.navigate("${Routes.PRODUCT_FORM}?productId=$productId")
-                },
+                onAdd = { nav.navigate(Routes.productForm(null)) },
+                onEdit = { productId -> nav.navigate(Routes.productForm(productId)) },
                 onGenerate = { nav.navigate(Routes.GENERATE) },
                 onSettings = { nav.navigate(Routes.SETTINGS) },
                 onRestore = { nav.navigate(Routes.RESTORE) }
@@ -33,7 +31,7 @@ fun AppNav(container: AppContainer) {
         }
 
         composable(
-            route = Routes.PRODUCT_FORM,
+            route = Routes.PRODUCT_FORM_ROUTE,
             arguments = listOf(
                 navArgument("productId") {
                     type = NavType.StringType
@@ -41,7 +39,9 @@ fun AppNav(container: AppContainer) {
                 }
             )
         ) { backStack ->
-            val pid = backStack.arguments?.getString("productId")?.takeIf { it.isNotBlank() }
+            val pid = backStack.arguments
+                ?.getString("productId")
+                ?.takeIf { it.isNotBlank() && it != "{productId}" }
 
             ProductFormScreen(
                 container = container,
@@ -51,10 +51,7 @@ fun AppNav(container: AppContainer) {
         }
 
         composable(Routes.GENERATE) {
-            GenerateCatalogScreen(
-                container = container,
-                onBack = { nav.popBackStack() }
-            )
+            GenerateCatalogScreen(container = container, onBack = { nav.popBackStack() })
         }
 
         composable(Routes.SETTINGS) {
@@ -63,7 +60,6 @@ fun AppNav(container: AppContainer) {
                 onBack = { nav.popBackStack() },
                 syncNow = { clientName, sharedFolderId ->
                     val zip = container.backupManager.buildLatestBackup(clientName)
-
                     val account = container.authManager.lastSignedInAccount()
                         ?: throw IllegalStateException("No hay sesión iniciada")
 
@@ -78,10 +74,7 @@ fun AppNav(container: AppContainer) {
         }
 
         composable(Routes.RESTORE) {
-            RestoreScreen(
-                container = container,
-                onBack = { nav.popBackStack() }
-            )
+            RestoreScreen(container = container, onBack = { nav.popBackStack() })
         }
     }
 }
