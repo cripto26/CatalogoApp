@@ -1,5 +1,3 @@
-@file:OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
-
 package com.quirozsolutions.catalogo1boton.ui.screens
 
 import androidx.compose.foundation.layout.*
@@ -9,16 +7,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.quirozsolutions.catalogo1boton.AppContainer
-import com.quirozsolutions.catalogo1boton.infra.pdf.PngSlots
 import com.quirozsolutions.catalogo1boton.infra.pdf.sharePdf
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GenerateCatalogScreen(container: AppContainer, onBack: () -> Unit) {
     val ctx = LocalContext.current
     val scope = rememberCoroutineScope()
 
-    // ✅ DEBUG opcional: si lo pones true, el PDF dibuja bordes rojos de slots
     var debugSlots by remember { mutableStateOf(false) }
 
     Scaffold(
@@ -30,8 +27,11 @@ fun GenerateCatalogScreen(container: AppContainer, onBack: () -> Unit) {
                 .padding(16.dp)
         ) {
 
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text("Mostrar guías (debug)")
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Dibujar slots (debug)")
                 Switch(checked = debugSlots, onCheckedChange = { debugSlots = it })
             }
 
@@ -42,10 +42,15 @@ fun GenerateCatalogScreen(container: AppContainer, onBack: () -> Unit) {
                     scope.launch {
                         val products = container.productRepository.getAllOnce()
 
-                        val pdf = container.pdfGenerator.generateWithPngTemplate(
+                        val logoPath = container.appState.storeLogoPathValue().ifBlank { null }
+                        val ws = container.appState.sellerWhatsappValue()
+                        val ig = container.appState.sellerInstagramValue()
+
+                        val pdf = container.pdfGenerator.generateMinimalistaCatalog(
                             products = products,
-                            pageAssetPath = "templates/ofertas_6.png",
-                            slots = PngSlots.ofertas6(),
+                            storeLogoPath = logoPath,
+                            sellerWhatsapp = ws,
+                            sellerInstagram = ig,
                             debugDrawSlots = debugSlots
                         )
 
@@ -54,10 +59,11 @@ fun GenerateCatalogScreen(container: AppContainer, onBack: () -> Unit) {
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Generar PDF (Plantilla PNG: Ofertas 6)")
+                Text("Generar PDF (Minimalista + Portada)")
             }
 
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(12.dp))
+
             TextButton(onClick = onBack, modifier = Modifier.fillMaxWidth()) {
                 Text("Volver")
             }

@@ -27,19 +27,28 @@ fun SettingsScreen(
     var clientName by remember { mutableStateOf("cliente") }
     var sharedFolderId by remember { mutableStateOf("") }
 
-    // Estado de sesión (se recalcula al entrar y después de login)
-    var signedEmail by remember { mutableStateOf<String?>(null) }
+    var sellerWhatsapp by remember { mutableStateOf("") }
+    var sellerInstagram by remember { mutableStateOf("") }
+    var storeLogoPath by remember { mutableStateOf("") }
 
+    // sesión
+    var signedEmail by remember { mutableStateOf<String?>(null) }
     fun refreshSession() {
         val acc = container.authManager.lastSignedInAccount()
         signedEmail = acc?.email
     }
 
+    // Cargar prefs al entrar
     LaunchedEffect(Unit) {
         refreshSession()
+        clientName = container.appState.clientNameValue()
+        sharedFolderId = container.appState.sharedFolderIdValue()
+        sellerWhatsapp = container.appState.sellerWhatsappValue()
+        sellerInstagram = container.appState.sellerInstagramValue()
+        storeLogoPath = container.appState.storeLogoPathValue()
     }
 
-    // Launcher Google Sign-In (manejo correcto)
+    // ✅ Launcher Google Sign-In (como tu versión que sí funcionaba)
     val googleSignInLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
@@ -49,7 +58,7 @@ fun SettingsScreen(
             signedEmail = account.email
             Toast.makeText(ctx, "Sesión iniciada: ${account.email}", Toast.LENGTH_LONG).show()
         } catch (e: ApiException) {
-            // Aquí verás el código real del problema (ej: 10 si falta SHA-1)
+            // clave para debug: si sale code=10 normalmente es SHA-1 / OAuth mal configurado
             Toast.makeText(
                 ctx,
                 "Google Sign-In falló (code=${e.statusCode})",
@@ -62,36 +71,87 @@ fun SettingsScreen(
         }
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(title = { Text("Ajustes") })
+    // Picker logo
+    val pickLogo = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri ->
+        if (uri != null) {
+            try {
+                val path = container.imageStore.saveFromUri(uri)
+                storeLogoPath = path
+                container.appState.setStoreLogoPath(path)
+                Toast.makeText(ctx, "Logo guardado ✅", Toast.LENGTH_SHORT).show()
+            } catch (t: Throwable) {
+                Toast.makeText(ctx, "No se pudo guardar el logo", Toast.LENGTH_SHORT).show()
+            }
         }
+    }
+
+    Scaffold(
+        topBar = { TopAppBar(title = { Text("Ajustes") }) }
     ) { padding ->
         Column(
-            modifier = Modifier
+            Modifier
                 .padding(padding)
                 .padding(16.dp)
                 .fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-
             OutlinedTextField(
                 value = clientName,
-                onValueChange = { clientName = it },
+                onValueChange = {
+                    clientName = it
+                    container.appState.setClientName(it)
+                },
                 label = { Text("Nombre cliente (para backup)") },
                 modifier = Modifier.fillMaxWidth()
             )
 
             OutlinedTextField(
                 value = sharedFolderId,
-                onValueChange = { sharedFolderId = it },
+                onValueChange = {
+                    sharedFolderId = it
+                    container.appState.setSharedFolderId(it)
+                },
                 label = { Text("Shared Folder ID (Drive) (opcional)") },
                 modifier = Modifier.fillMaxWidth()
             )
 
-            Text(
-                text = if (signedEmail != null) "Sesión: $signedEmail" else "Sesión: No iniciada"
+            Divider()
+
+            OutlinedTextField(
+                value = sellerWhatsapp,
+                onValueChange = {
+                    sellerWhatsapp = it
+                    container.appState.setSellerWhatsapp(it)
+                },
+                label = { Text("WhatsApp vendedor (para la portada)") },
+                modifier = Modifier.fillMaxWidth()
             )
+
+            OutlinedTextField(
+                value = sellerInstagram,
+                onValueChange = {
+                    sellerInstagram = it
+                    container.appState.setSellerInstagram(it)
+                },
+                label = { Text("Instagram vendedor (para la portada)") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                Button(onClick = { pickLogo.launch("image/*") }) {
+                    Text("Elegir logo")
+                }
+                Text(
+                    text = if (storeLogoPath.isBlank()) "Sin logo" else "Logo ✅",
+                    modifier = Modifier.padding(top = 10.dp)
+                )
+            }
+
+            Divider()
+
+            Text("Sesión: ${signedEmail ?: "(no iniciada)"}")
 
             Button(
                 onClick = {
@@ -115,12 +175,9 @@ fun SettingsScreen(
                             }
 
                             val folderIdOrNull = sharedFolderId.trim().ifBlank { null }
+                            val name = clientName.trim().ifBlank { "cliente" }
 
-                            syncNow(
-                                clientName.trim().ifBlank { "cliente" },
-                                folderIdOrNull
-                            )
-
+                            syncNow(name, folderIdOrNull)
                             Toast.makeText(ctx, "Sincronización lanzada", Toast.LENGTH_SHORT).show()
                         } catch (e: Exception) {
                             Toast.makeText(ctx, "Error sincronizando: ${e.message}", Toast.LENGTH_LONG).show()
@@ -133,10 +190,7 @@ fun SettingsScreen(
                 Text("Sincronizar ahora")
             }
 
-            TextButton(
-                onClick = onBack,
-                modifier = Modifier.fillMaxWidth()
-            ) {
+            TextButton(onClick = onBack, modifier = Modifier.fillMaxWidth()) {
                 Text("Volver")
             }
         }

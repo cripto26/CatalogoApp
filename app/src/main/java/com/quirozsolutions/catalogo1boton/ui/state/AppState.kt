@@ -8,10 +8,9 @@ import com.quirozsolutions.catalogo1boton.AppContainer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.flow.first
-
 
 private val Context.dataStore by preferencesDataStore(name = "app_prefs")
 
@@ -24,6 +23,11 @@ class AppState(
     companion object {
         private val KEY_CLIENT_NAME = stringPreferencesKey("client_name")
         private val KEY_SHARED_FOLDER_ID = stringPreferencesKey("shared_folder_id")
+
+        // ✅ Nuevos
+        private val KEY_SELLER_WHATSAPP = stringPreferencesKey("seller_whatsapp")
+        private val KEY_SELLER_INSTAGRAM = stringPreferencesKey("seller_instagram")
+        private val KEY_STORE_LOGO_PATH = stringPreferencesKey("store_logo_path")
     }
 
     val clientName: Flow<String> =
@@ -32,16 +36,48 @@ class AppState(
     val sharedFolderId: Flow<String> =
         context.dataStore.data.map { prefs -> prefs[KEY_SHARED_FOLDER_ID] ?: "" }
 
+    val sellerWhatsapp: Flow<String> =
+        context.dataStore.data.map { prefs -> prefs[KEY_SELLER_WHATSAPP] ?: "" }
+
+    val sellerInstagram: Flow<String> =
+        context.dataStore.data.map { prefs -> prefs[KEY_SELLER_INSTAGRAM] ?: "" }
+
+    val storeLogoPath: Flow<String> =
+        context.dataStore.data.map { prefs -> prefs[KEY_STORE_LOGO_PATH] ?: "" }
+
+    suspend fun clientNameValue(): String =
+        context.dataStore.data.map { it[KEY_CLIENT_NAME] ?: "cliente" }.first()
+
+    suspend fun sharedFolderIdValue(): String =
+        context.dataStore.data.map { it[KEY_SHARED_FOLDER_ID] ?: "" }.first()
+
+    suspend fun sellerWhatsappValue(): String =
+        context.dataStore.data.map { it[KEY_SELLER_WHATSAPP] ?: "" }.first()
+
+    suspend fun sellerInstagramValue(): String =
+        context.dataStore.data.map { it[KEY_SELLER_INSTAGRAM] ?: "" }.first()
+
+    suspend fun storeLogoPathValue(): String =
+        context.dataStore.data.map { it[KEY_STORE_LOGO_PATH] ?: "" }.first()
+
     fun setClientName(value: String) {
-        scope.launch {
-            context.dataStore.edit { it[KEY_CLIENT_NAME] = value.trim() }
-        }
+        scope.launch { context.dataStore.edit { it[KEY_CLIENT_NAME] = value.trim() } }
     }
 
     fun setSharedFolderId(value: String) {
-        scope.launch {
-            context.dataStore.edit { it[KEY_SHARED_FOLDER_ID] = value.trim() }
-        }
+        scope.launch { context.dataStore.edit { it[KEY_SHARED_FOLDER_ID] = value.trim() } }
+    }
+
+    fun setSellerWhatsapp(value: String) {
+        scope.launch { context.dataStore.edit { it[KEY_SELLER_WHATSAPP] = value.trim() } }
+    }
+
+    fun setSellerInstagram(value: String) {
+        scope.launch { context.dataStore.edit { it[KEY_SELLER_INSTAGRAM] = value.trim() } }
+    }
+
+    fun setStoreLogoPath(value: String) {
+        scope.launch { context.dataStore.edit { it[KEY_STORE_LOGO_PATH] = value.trim() } }
     }
 
     /**
@@ -56,17 +92,7 @@ class AppState(
             if (debounced) {
                 container.workScheduler.scheduleDebouncedSync(clientName = client, sharedFolderId = shared)
             } else {
-                // para "sincronizar ahora" reutilizamos el mismo método, pero puedes crear otro request sin delay
-                container.workScheduler.scheduleDebouncedSync(clientName = client, sharedFolderId = shared)
+                container.workScheduler.scheduleImmediateSync(clientName = client, sharedFolderId = shared)
             }
         }
-    }
-
-    private suspend fun clientNameValue(): String =
-        context.dataStore.data.map { it[KEY_CLIENT_NAME] ?: "cliente" }.first()
-
-    private suspend fun sharedFolderIdValue(): String =
-        context.dataStore.data.map { it[KEY_SHARED_FOLDER_ID] ?: "" }.first()
-}
-
-
+    }}
