@@ -79,15 +79,15 @@ class PdfCatalogGenerator(
         // Textos redes (sobre las “píldoras”)
         val socialPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             color = Color.rgb(90, 90, 90)
-            textSize = (coverH * 0.030f) // ~23
+            textSize = (coverH * 0.040f) // ~23
             typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
             textAlign = Paint.Align.LEFT
         }
 
         // Posiciones aproximadas (ajustables)
         val textX = (coverW * 0.44f)
-        val whatsappY = (coverH * 0.49f)
-        val instaY = (coverH * 0.60f)
+        val whatsappY = (coverH * 0.61f)
+        val instaY = (coverH * 0.73f)
 
         val ws = sellerWhatsapp.ifBlank { "XX XXXX XXXX" }
         val ig = sellerInstagram.ifBlank { "@tuinstagram" }

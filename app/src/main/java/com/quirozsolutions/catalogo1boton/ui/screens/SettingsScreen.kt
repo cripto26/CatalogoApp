@@ -57,8 +57,38 @@ fun SettingsScreen(
             val account = task.getResult(ApiException::class.java)
             signedEmail = account.email
             Toast.makeText(ctx, "Sesión iniciada: ${account.email}", Toast.LENGTH_LONG).show()
+
+            // ✅ AUTO-RESTORE: al loguearse, restaurar backup de Drive si existe (y si local está vacío)
+            scope.launch {
+                try {
+                    // 1) Evitar pisar datos locales
+                    val localProducts = container.productRepository.getAllOnce()
+                    if (localProducts.isNotEmpty()) {
+                        // Si quieres FORZAR restauración aunque haya datos, borra este return
+                        return@launch
+                    }
+
+                    // 2) Tomar el sharedFolderId si el usuario lo configuró en Ajustes
+                    val sharedId = sharedFolderId.trim().takeIf { it.isNotBlank() }
+
+                    // 3) Descargar y restaurar si hay backup
+                    val zip = container.driveSyncManager.downloadLatestBackup(
+                        account = account,
+                        sharedFolderId = sharedId
+                    )
+
+                    if (zip != null) {
+                        container.restoreManager.restoreFromZip(zip)
+                        Toast.makeText(ctx, "✅ Backup restaurado desde Drive", Toast.LENGTH_LONG).show()
+                    } else {
+                        Toast.makeText(ctx, "ℹ️ No hay backup en Drive para restaurar", Toast.LENGTH_SHORT).show()
+                    }
+                } catch (e: Exception) {
+                    Toast.makeText(ctx, "❌ Error restaurando: ${e.message}", Toast.LENGTH_LONG).show()
+                }
+            }
+
         } catch (e: ApiException) {
-            // clave para debug: si sale code=10 normalmente es SHA-1 / OAuth mal configurado
             Toast.makeText(
                 ctx,
                 "Google Sign-In falló (code=${e.statusCode})",
@@ -70,6 +100,7 @@ fun SettingsScreen(
             refreshSession()
         }
     }
+
 
     // Picker logo
     val pickLogo = rememberLauncherForActivityResult(
