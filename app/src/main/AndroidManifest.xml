@@ -1,5 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
 
@@ -15,7 +19,9 @@
         android:name=".App"
         android:allowBackup="false"
         android:supportsRtl="true"
-        android:label="Catálogo 1 Botón">
+        android:label="Catálogo Now"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round">
 
         <provider
             android:name="androidx.core.content.FileProvider"

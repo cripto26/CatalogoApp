@@ -55,6 +55,9 @@ fun GenerateCatalogScreen(container: AppContainer, onBack: () -> Unit) {
                         )
 
                         sharePdf(ctx, pdf)
+
+                        // ✅ NUEVO: cada PDF nuevo -> subir backup inmediatamente
+                        container.appState.scheduleSyncNowOrDebounced(debounced = false)
                     }
                 },
                 modifier = Modifier.fillMaxWidth()

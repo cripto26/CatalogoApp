@@ -47,6 +47,8 @@ class DriveSyncManager(
                 .setSpaces("drive")
                 .setQ(q)
                 .setFields("files(id,name)")
+                .setSupportsAllDrives(true)
+                .setIncludeItemsFromAllDrives(true)
                 .execute()
 
             list.files?.firstOrNull()?.id
@@ -62,6 +64,7 @@ class DriveSyncManager(
 
             drive.files().create(metadata)
                 .setFields("id")
+                .setSupportsAllDrives(true)
                 .execute()
                 .id
         }
@@ -69,7 +72,6 @@ class DriveSyncManager(
     private suspend fun ensureBackupsFolder(drive: Drive, sharedFolderId: String?): String =
         withContext(Dispatchers.IO) {
             val parent = sharedFolderId?.takeIf { it.isNotBlank() } ?: "root"
-
             val existingId = findFolderId(drive, backupsFolderName, parent)
             existingId ?: createFolder(drive, backupsFolderName, parent)
         }
@@ -82,6 +84,8 @@ class DriveSyncManager(
                 .setSpaces("drive")
                 .setQ(q)
                 .setFields("files(id,name,modifiedTime)")
+                .setSupportsAllDrives(true)
+                .setIncludeItemsFromAllDrives(true)
                 .execute()
 
             list.files
@@ -102,29 +106,39 @@ class DriveSyncManager(
 
         val drive = driveService(account)
 
-        Log.d("DRIVE_SYNC", "Buscando / creando carpeta en Drive...")
+        Log.d("DRIVE_SYNC", "Buscando / creando carpeta en Drive.")
         val folderId = ensureBackupsFolder(drive, sharedFolderId)
         Log.d("DRIVE_SYNC", "FolderId obtenido: $folderId")
 
         val existingId = findFileInFolder(drive, latestBackupName, folderId)
 
-        val metadata = com.google.api.services.drive.model.File().apply {
-            name = latestBackupName
-            parents = listOf(folderId)
-            description = "Último backup de $clientName"
-        }
-
         val mediaContent = FileContent("application/zip", backupZip)
 
         val result = if (existingId == null) {
             Log.d("DRIVE_SYNC", "No existe backup previo -> creando archivo")
-            drive.files().create(metadata, mediaContent)
-                .setFields("id")
+
+            val createMeta = com.google.api.services.drive.model.File().apply {
+                name = latestBackupName
+                parents = listOf(folderId) // ✅ SOLO en create
+                description = "Último backup de $clientName"
+            }
+
+            drive.files().create(createMeta, mediaContent)
+                .setFields("id, modifiedTime")
+                .setSupportsAllDrives(true)
                 .execute()
         } else {
             Log.d("DRIVE_SYNC", "Existe backup previo -> actualizando archivo id=$existingId")
-            drive.files().update(existingId, metadata, mediaContent)
-                .setFields("id")
+
+            // ✅ IMPORTANTE: en update NO envíes parents
+            val updateMeta = com.google.api.services.drive.model.File().apply {
+                name = latestBackupName
+                description = "Último backup de $clientName"
+            }
+
+            drive.files().update(existingId, updateMeta, mediaContent)
+                .setFields("id, modifiedTime")
+                .setSupportsAllDrives(true)
                 .execute()
         }
 
@@ -155,7 +169,9 @@ class DriveSyncManager(
 
         Log.d("DRIVE_SYNC", "Descargando fileId=$fileId -> ${out.absolutePath}")
         FileOutputStream(out).use { output ->
-            drive.files().get(fileId).executeMediaAndDownloadTo(output)
+            drive.files().get(fileId)
+                .setSupportsAllDrives(true)
+                .executeMediaAndDownloadTo(output)
         }
 
         Log.d("DRIVE_SYNC", "Descarga OK")
