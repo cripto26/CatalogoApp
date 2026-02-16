@@ -1,226 +1,511 @@
 package com.quirozsolutions.catalogo1boton.infra.pdf
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.Rect
-import android.graphics.Typeface
+import android.graphics.*
 import android.graphics.pdf.PdfDocument
-import androidx.annotation.WorkerThread
+import com.quirozsolutions.catalogo1boton.domain.model.CatalogTemplate
 import com.quirozsolutions.catalogo1boton.domain.model.Product
+import com.quirozsolutions.catalogo1boton.domain.model.displayName
 import com.quirozsolutions.catalogo1boton.infra.files.ImageStore
+import com.quirozsolutions.catalogo1boton.infra.pdf.templates.TemplateRegistry
 import java.io.File
 import java.io.FileOutputStream
 import java.text.NumberFormat
 import java.util.Locale
+import kotlin.math.ceil
+import kotlin.math.max
 import kotlin.math.min
 
 class PdfCatalogGenerator(
     private val context: Context,
     private val imageStore: ImageStore
 ) {
-    private val money = NumberFormat.getCurrencyInstance(Locale("es", "CO"))
 
     /**
-     * ✅ Catálogo minimalista
-     * - Portada: assets/templates/portada_minimalista.png
-     * - Páginas: assets/templates/tamplate_minimalista_minimalista.png
+     * Mantengo tu método anterior para no romper llamadas existentes.
      */
-    @WorkerThread
     fun generateMinimalistaCatalog(
         products: List<Product>,
         storeLogoPath: String?,
         sellerWhatsapp: String,
         sellerInstagram: String,
         debugDrawSlots: Boolean = false,
-        coverAssetPath: String = "templates/portada_minimalista.png",
-        pageAssetPath: String = "templates/tamplate_minimalista_minimalista.png",
-        slots: List<PngSlot> = PngSlots.minimalista6()
+        onProgress: (cur: Int, total: Int) -> Unit = { _, _ -> }
     ): File {
-        val outDir = File(context.filesDir, "catalogs").apply { mkdirs() }
-        val outFile = File(outDir, "catalog_${System.currentTimeMillis()}.pdf")
+        return generateCatalog(
+            products = products,
+            storeLogoPath = storeLogoPath,
+            sellerWhatsapp = sellerWhatsapp,
+            sellerInstagram = sellerInstagram,
+            template = CatalogTemplate.MINIMALISTA,
+            debugDrawSlots = debugDrawSlots,
+            onProgress = onProgress
+        )
+    }
+
+    /**
+     * Genera el PDF.
+     * - Si template == MINIMALISTA y existe assets/templates/tamplate.png -> usa modo PNG (1024x761) tipo “polaroid”.
+     * - Si no, usa el modo A4 actual con TemplateRegistry.
+     */
+    fun generateCatalog(
+        products: List<Product>,
+        storeLogoPath: String?,
+        sellerWhatsapp: String,
+        sellerInstagram: String,
+        template: CatalogTemplate,
+        debugDrawSlots: Boolean = false,
+        onProgress: (cur: Int, total: Int) -> Unit = { _, _ -> }
+    ): File {
+
+        // ¿Existe tu plantilla PNG?
+        val templateBmp = if (template == CatalogTemplate.MINIMALISTA) {
+            loadAssetBitmap("templates/tamplate.png")
+        } else null
+
+        // Si está la PNG y es MINIMALISTA -> volvemos al modo “bueno” (como tu version anterior)
+        val usePngMinimalista = (template == CatalogTemplate.MINIMALISTA && templateBmp != null)
+
+        // Tamaño página:
+        // - Modo PNG: 1024 x 761 (igual a tu plantilla)
+        // - Modo A4: 595 x 842
+        val pageW = if (usePngMinimalista) 1024 else 595
+        val pageH = if (usePngMinimalista) 761 else 842
 
         val doc = PdfDocument()
 
-        // ---------- 1) PORTADA ----------
-        val coverBg = loadAssetBitmap(coverAssetPath)
-        val coverW = coverBg?.width ?: 1024
-        val coverH = coverBg?.height ?: 761
+        // ---- Progreso total (pasos fijos + 1 por producto) ----
+        val totalSteps = (products.size.coerceAtLeast(0)) + 3
+        var curStep = 0
 
-        val pageInfoCover = PdfDocument.PageInfo.Builder(coverW, coverH, 1).create()
-        val coverPage = doc.startPage(pageInfoCover)
-        val coverCanvas = coverPage.canvas
-
-        drawBackground(coverCanvas, coverBg, coverW, coverH)
-
-        // Logo encima del texto "TU MARCA AQUÍ" (rect aprox para 1024x761)
-        val logoRect = Rect(
-            (coverW * 0.22f).toInt(),
-            (coverH * 0.17f).toInt(),
-            (coverW * 0.78f).toInt(),
-            (coverH * 0.30f).toInt()
-        )
-
-        val logoBitmap = storeLogoPath
-            ?.takeIf { it.isNotBlank() }
-            ?.let { imageStore.loadBitmap(it, maxSidePx = 1200) }
-
-        if (logoBitmap != null) {
-            // Cubre un poco el texto de fondo por si se alcanza a ver
-            val bgPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.WHITE; alpha = 220 }
-            coverCanvas.drawRect(logoRect, bgPaint)
-
-            drawBitmapFitCenter(coverCanvas, logoBitmap, logoRect)
+        fun bump() {
+            curStep += 1
+            onProgress(curStep.coerceAtMost(totalSteps), totalSteps)
         }
 
-        // Textos redes (sobre las “píldoras”)
-        val socialPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = Color.rgb(90, 90, 90)
-            textSize = (coverH * 0.040f) // ~23
-            typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
-            textAlign = Paint.Align.LEFT
-        }
+        onProgress(0, totalSteps)
+        bump()
 
-        // Posiciones aproximadas (ajustables)
-        val textX = (coverW * 0.44f)
-        val whatsappY = (coverH * 0.61f)
-        val instaY = (coverH * 0.73f)
-
-        val ws = sellerWhatsapp.ifBlank { "XX XXXX XXXX" }
-        val ig = sellerInstagram.ifBlank { "@tuinstagram" }
-
-        coverCanvas.drawText(ws, textX, whatsappY, socialPaint)
-        coverCanvas.drawText(ig, textX, instaY, socialPaint)
-
-        doc.finishPage(coverPage)
-
-        // ---------- 2) PÁGINAS DE PRODUCTOS ----------
-        val bg = loadAssetBitmap(pageAssetPath)
-        val pageW = bg?.width ?: 1024
-        val pageH = bg?.height ?: 761
-
-        val perPage = slots.size
-        var idx = 0
-        var pageNumber = 2
-
-        val pricePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = Color.rgb(60, 60, 60)
-            textSize = (pageH * 0.035f) // ~26
+        // ---- Paints portada ----
+        val paintTitle = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.BLACK
+            textSize = 22f
             typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-            textAlign = Paint.Align.CENTER
+        }
+        val paintSub = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.DKGRAY
+            textSize = 12f
         }
 
-        val dbgPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            style = Paint.Style.STROKE
-            strokeWidth = 2f
-            color = Color.RED
-        }
+        // ---- Portada ----
+        run {
+            val portadaBmp = loadAssetBitmap("templates/portada.png")
 
-        while (idx < products.size) {
-            val pageInfo = PdfDocument.PageInfo.Builder(pageW, pageH, pageNumber++).create()
+            val pageInfo = PdfDocument.PageInfo.Builder(pageW, pageH, 1).create()
             val page = doc.startPage(pageInfo)
-            val canvas = page.canvas
+            val c = page.canvas
 
-            drawBackground(canvas, bg, pageW, pageH)
+            c.drawColor(Color.WHITE)
 
-            val sub = products.subList(idx, min(idx + perPage, products.size))
+            if (usePngMinimalista && portadaBmp != null) {
+                // Portada diseñada en PNG
+                c.drawBitmap(portadaBmp, null, Rect(0, 0, pageW, pageH), null)
+            } else {
+                // Portada programática (tu versión actual)
+                val margin = 36
+                val centerX = pageW / 2
 
-            for (i in sub.indices) {
-                val p = sub[i]
-                val slot = slots[i]
+                val maxLogoW = pageW - margin * 2
+                val maxLogoH = 180
+                val logoDst = Rect(margin, 70, margin + maxLogoW, 70 + maxLogoH)
 
-                val bmp = imageStore.loadBitmap(p.imagePath, maxSidePx = 1600)
-                if (bmp != null) {
-                    drawBitmapCenterCrop(canvas, bmp, slot.imageRect)
+                val logoBmp = storeLogoPath?.let {
+                    val maxSidePx = pointsToPx(max(logoDst.width(), logoDst.height()), COVER_LOGO_DPI)
+                    imageStore.loadBitmapForPdf(it, maxSidePx)
+                }
+                if (logoBmp != null) {
+                    val dst = fitRect(
+                        srcW = logoBmp.width,
+                        srcH = logoBmp.height,
+                        dstLeft = logoDst.left,
+                        dstTop = logoDst.top,
+                        dstW = logoDst.width(),
+                        dstH = logoDst.height()
+                    )
+                    c.drawBitmap(logoBmp, null, dst, null)
+                    logoBmp.recycle()
                 }
 
-                val price = money.format(p.priceCents / 100.0)
-                canvas.drawText(price, slot.pricePoint.x, slot.pricePoint.y, pricePaint)
+                val title = "Catálogo"
+                val titleW = paintTitle.measureText(title)
+                c.drawText(title, centerX - (titleW / 2f), 320f, paintTitle)
 
-                if (debugDrawSlots) {
-                    canvas.drawRect(slot.imageRect, dbgPaint)
-                    canvas.drawCircle(slot.pricePoint.x, slot.pricePoint.y, 6f, dbgPaint)
+                var y = 380f
+                if (sellerInstagram.isNotBlank()) {
+                    c.drawText("Instagram: $sellerInstagram", margin.toFloat(), y, paintSub)
+                    y += 22f
                 }
+                if (sellerWhatsapp.isNotBlank()) {
+                    c.drawText("WhatsApp: $sellerWhatsapp", margin.toFloat(), y, paintSub)
+                    y += 22f
+                }
+
+                c.drawText("Generado desde la app", margin.toFloat(), (pageH - 40).toFloat(), paintSub)
             }
 
             doc.finishPage(page)
-            idx += perPage
+            portadaBmp?.recycle()
         }
 
-        FileOutputStream(outFile).use { doc.writeTo(it) }
+        bump()
+
+        val priceFmt = NumberFormat.getCurrencyInstance(Locale("es", "CO"))
+
+        var pageNumber = 2
+        var index = 0
+
+        if (usePngMinimalista) {
+            // =========================
+            // MODO PNG (polaroid 6 slots)
+            // =========================
+            val slots = PngSlots.minimalista6()
+
+            val pricePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                color = Color.parseColor("#3E3E3E")
+                textSize = 38f
+                typeface = Typeface.DEFAULT_BOLD
+            }
+
+            val namePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                color = Color.parseColor("#3E3E3E")
+                textSize = 22f
+                typeface = Typeface.DEFAULT_BOLD
+            }
+
+            // -------------------------
+            // AJUSTES DE ESPACIADO
+            // (para que NOMBRE y PRECIO no queden pegados)
+            // -------------------------
+            val PRICE_Y_OFFSET = 14f     // baja un poquito el precio (más aire arriba)
+            val NAME_TO_PRICE_GAP = 18f  // espacio mínimo entre nombre y precio
+            val NAME_TOP_PADDING = 16    // separa el nombre de la foto
+
+            while (index < products.size) {
+                val pageInfo = PdfDocument.PageInfo.Builder(pageW, pageH, pageNumber).create()
+                val page = doc.startPage(pageInfo)
+                val c = page.canvas
+
+                c.drawColor(Color.WHITE)
+
+                // Fondo plantilla
+                c.drawBitmap(templateBmp!!, null, Rect(0, 0, pageW, pageH), null)
+
+                val maxOnThisPage = min(slots.size, products.size - index)
+
+                for (i in 0 until maxOnThisPage) {
+                    val product = products[index + i]
+                    val slot = slots[i]
+
+                    val priceText = priceFmt.format(product.priceCents / 100.0)
+
+                    // Foto (centerCrop dentro del marco negro)
+                    val bmp = product.imagePath?.takeIf { it.isNotBlank() }?.let { path ->
+                        val maxSidePx = pointsToPx(
+                            max(slot.imageRect.width(), slot.imageRect.height()),
+                            PRODUCT_IMAGE_DPI
+                        )
+                        imageStore.loadBitmapForPdf(path, maxSidePx)
+                    }
+
+                    if (bmp != null) {
+                        drawBitmapCenterCrop(c, bmp, slot.imageRect)
+                        bmp.recycle()
+                    }
+
+                    // Precio centrado (un poquito más abajo)
+                    val tw = pricePaint.measureText(priceText)
+                    val priceY = slot.pricePoint.y + PRICE_Y_OFFSET
+                    c.drawText(
+                        priceText,
+                        slot.pricePoint.x - (tw / 2f),
+                        priceY,
+                        pricePaint
+                    )
+
+                    // ==============================
+                    // NOMBRE: solo si hay descripción
+                    // (displayName ya NO devuelve UUID)
+                    // ==============================
+                    val name = product.displayName.trim()
+                    if (name.isNotBlank() && name != "Producto") {
+
+                        // Área del nombre: empieza un poco más abajo de la foto
+                        // y termina con un "gap" antes del precio (para que no quede pegado)
+                        val titleAreaTop = slot.imageRect.bottom + NAME_TOP_PADDING
+                        val titleAreaBottom = (priceY - NAME_TO_PRICE_GAP).toInt()
+
+                        if (titleAreaBottom > titleAreaTop) {
+                            val titleArea = Rect(
+                                slot.imageRect.left,
+                                titleAreaTop,
+                                slot.imageRect.right,
+                                titleAreaBottom
+                            )
+
+                            drawWrappedCenteredText(
+                                canvas = c,
+                                text = name,
+                                area = titleArea,
+                                paint = namePaint,
+                                maxLines = 2
+                            )
+                        }
+                    }
+
+                    bump()
+                }
+
+                doc.finishPage(page)
+                pageNumber += 1
+                index += maxOnThisPage
+            }
+
+            templateBmp?.recycle()
+
+        } else {
+            // =========================
+            // MODO A4 (tu versión actual)
+            // =========================
+            val tpl = TemplateRegistry.resolve(template)
+
+            val cols = tpl.columns().coerceAtLeast(1)
+            val perPage = tpl.itemsPerPage().coerceAtLeast(1)
+            val rows = ceil(perPage / cols.toDouble()).toInt().coerceAtLeast(1)
+
+            val marginX = 28
+            val marginTop = 36
+            val marginBottom = 28
+            val gap = 14
+
+            val usableW = pageW - marginX * 2 - gap * (cols - 1)
+            val usableH = pageH - marginTop - marginBottom - gap * (rows - 1)
+
+            val cellW = usableW / cols
+            val cellH = usableH / rows
+
+            while (index < products.size) {
+                val pageInfo = PdfDocument.PageInfo.Builder(pageW, pageH, pageNumber).create()
+                val page = doc.startPage(pageInfo)
+                val c = page.canvas
+
+                c.drawColor(Color.WHITE)
+
+                if (debugDrawSlots) {
+                    val p = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                        style = Paint.Style.STROKE
+                        color = Color.LTGRAY
+                        strokeWidth = 1f
+                    }
+                    for (r in 0 until rows) {
+                        for (col in 0 until cols) {
+                            val left = marginX + col * (cellW + gap)
+                            val top = marginTop + r * (cellH + gap)
+                            val rect = Rect(left, top, left + cellW, top + cellH)
+                            c.drawRect(rect, p)
+                        }
+                    }
+                }
+
+                val maxOnThisPage = min(perPage, products.size - index)
+
+                for (i in 0 until maxOnThisPage) {
+                    val product = products[index + i]
+
+                    val row = i / cols
+                    val col = i % cols
+
+                    val left = marginX + col * (cellW + gap)
+                    val top = marginTop + row * (cellH + gap)
+                    val cellRect = Rect(left, top, left + cellW, top + cellH)
+
+                    val priceText = priceFmt.format(product.priceCents / 100.0)
+
+                    val bmp = product.imagePath?.takeIf { it.isNotBlank() }?.let { path ->
+                        val imgRect = tpl.imageRect(cellRect)
+                        val maxSidePx = pointsToPx(max(imgRect.width(), imgRect.height()), PRODUCT_IMAGE_DPI)
+                        imageStore.loadBitmapForPdf(path, maxSidePx)
+                    }
+
+                    tpl.drawItem(
+                        canvas = c,
+                        rect = cellRect,
+                        product = product,
+                        image = bmp,
+                        priceText = priceText
+                    )
+
+                    bmp?.recycle()
+                    bump()
+                }
+
+                doc.finishPage(page)
+                pageNumber += 1
+                index += maxOnThisPage
+            }
+        }
+
+        // ---- Guardar PDF ----
+        val outFile = File(context.cacheDir, "catalogo_${System.currentTimeMillis()}.pdf")
+        FileOutputStream(outFile).use { fos -> doc.writeTo(fos) }
         doc.close()
+
+        bump()
         return outFile
     }
 
-    // ---------------------------------------------------------------------------------------------
-    // Helpers (sin duplicados -> elimina la ambigüedad de overloads)
-    // ---------------------------------------------------------------------------------------------
+    // =========================
+    // Helpers
+    // =========================
 
     private fun loadAssetBitmap(assetPath: String): Bitmap? {
         return try {
             context.assets.open(assetPath).use { input ->
                 BitmapFactory.decodeStream(input)
             }
-        } catch (_: Throwable) {
+        } catch (_: Exception) {
             null
         }
     }
 
-    private fun drawBackground(canvas: Canvas, bg: Bitmap?, pageW: Int, pageH: Int) {
-        if (bg != null) {
-            val target = Rect(0, 0, pageW, pageH)
-            drawBitmapFitCenter(canvas, bg, target)
-        } else {
-            canvas.drawColor(Color.WHITE)
+    /**
+     * CenterCrop sin deformar dentro de dst.
+     */
+    private fun drawBitmapCenterCrop(canvas: Canvas, bmp: Bitmap, dst: Rect) {
+        val srcW = bmp.width.toFloat()
+        val srcH = bmp.height.toFloat()
+        val dstW = dst.width().toFloat()
+        val dstH = dst.height().toFloat()
+
+        val scale = max(dstW / srcW, dstH / srcH)
+        val scaledW = srcW * scale
+        val scaledH = srcH * scale
+
+        val left = dst.left + (dstW - scaledW) / 2f
+        val top = dst.top + (dstH - scaledH) / 2f
+
+        val m = Matrix().apply {
+            postScale(scale, scale)
+            postTranslate(left, top)
+        }
+
+        canvas.save()
+        canvas.clipRect(dst)
+        canvas.drawBitmap(bmp, m, null)
+        canvas.restore()
+    }
+
+    private fun drawWrappedCenteredText(
+        canvas: Canvas,
+        text: String,
+        area: Rect,
+        paint: Paint,
+        maxLines: Int
+    ) {
+        if (area.width() <= 0 || area.height() <= 0) return
+        val clean = text.trim()
+        if (clean.isEmpty()) return
+
+        val words = clean.split(Regex("\\s+"))
+        val lines = ArrayList<String>(maxLines)
+
+        var i = 0
+        while (i < words.size && lines.size < maxLines) {
+            var line = words[i]
+            i++
+
+            while (i < words.size) {
+                val candidate = "$line ${words[i]}"
+                if (paint.measureText(candidate) <= area.width()) {
+                    line = candidate
+                    i++
+                } else break
+            }
+            lines.add(line)
+        }
+
+        // Si sobró texto, elipsiza última línea
+        val hasMore = i < words.size
+        if (hasMore && lines.isNotEmpty()) {
+            lines[lines.lastIndex] = ellipsizeToWidth(lines.last(), area.width().toFloat(), paint)
+        }
+
+        val lineH = paint.fontSpacing
+        var y = area.top - paint.ascent() // baseline
+
+        for (line in lines) {
+            if (y > area.bottom) break
+            val w = paint.measureText(line)
+            val x = area.exactCenterX() - (w / 2f)
+            canvas.drawText(line, x, y, paint)
+            y += lineH
         }
     }
 
-    /**
-     * ✅ Fit-center: mantiene proporción, centra, no deforma.
-     * (NOTA: solo existe esta versión -> no hay overload ambiguity)
-     */
-    private fun drawBitmapFitCenter(canvas: Canvas, bitmap: Bitmap, target: Rect, paint: Paint? = null) {
-        val bw = bitmap.width.toFloat()
-        val bh = bitmap.height.toFloat()
-        if (bw <= 0f || bh <= 0f) return
+    private fun ellipsizeToWidth(text: String, maxW: Float, paint: Paint): String {
+        val ell = "…"
+        if (paint.measureText(text) <= maxW) return text
+        if (paint.measureText(ell) > maxW) return ""
 
-        val scale = min(target.width() / bw, target.height() / bh)
-        val dw = (bw * scale).toInt()
-        val dh = (bh * scale).toInt()
-
-        val left = target.left + (target.width() - dw) / 2
-        val top = target.top + (target.height() - dh) / 2
-
-        val dst = Rect(left, top, left + dw, top + dh)
-        canvas.drawBitmap(bitmap, null, dst, paint)
+        var end = text.length
+        while (end > 0) {
+            val candidate = text.substring(0, end).trimEnd() + ell
+            if (paint.measureText(candidate) <= maxW) return candidate
+            end--
+        }
+        return ell
     }
 
     /**
-     * ✅ Center-crop: llena el rectángulo y recorta sobrante (sin deformar).
+     * Convierte puntos (72dpi) a píxeles objetivo (DPI elegido).
      */
-    private fun drawBitmapCenterCrop(canvas: Canvas, bitmap: Bitmap, target: Rect) {
-        val srcW = bitmap.width
-        val srcH = bitmap.height
-        if (srcW <= 0 || srcH <= 0) return
+    private fun pointsToPx(points: Int, dpi: Int): Int {
+        return ((points.toFloat() * dpi.toFloat()) / 72f).toInt().coerceAtLeast(1)
+    }
+
+    /**
+     * Calcula un rect destino manteniendo aspect ratio (contain).
+     */
+    private fun fitRect(
+        srcW: Int,
+        srcH: Int,
+        dstLeft: Int,
+        dstTop: Int,
+        dstW: Int,
+        dstH: Int
+    ): Rect {
+        if (srcW <= 0 || srcH <= 0) return Rect(dstLeft, dstTop, dstLeft + dstW, dstTop + dstH)
 
         val srcRatio = srcW.toFloat() / srcH.toFloat()
-        val dstRatio = target.width().toFloat() / target.height().toFloat()
+        val dstRatio = dstW.toFloat() / dstH.toFloat()
 
-        val srcRect = if (srcRatio > dstRatio) {
-            // Recorta lados
-            val newW = (srcH * dstRatio).toInt()
-            val x = (srcW - newW) / 2
-            Rect(x, 0, x + newW, srcH)
+        val w: Int
+        val h: Int
+
+        if (srcRatio > dstRatio) {
+            w = dstW
+            h = (dstW / srcRatio).toInt()
         } else {
-            // Recorta arriba/abajo
-            val newH = (srcW / dstRatio).toInt()
-            val y = (srcH - newH) / 2
-            Rect(0, y, srcW, y + newH)
+            h = dstH
+            w = (dstH * srcRatio).toInt()
         }
 
-        canvas.drawBitmap(bitmap, srcRect, target, null)
+        val left = dstLeft + (dstW - w) / 2
+        val top = dstTop + (dstH - h) / 2
+        return Rect(left, top, left + w, top + h)
+    }
+
+    companion object {
+        private const val PRODUCT_IMAGE_DPI = 160
+        private const val COVER_LOGO_DPI = 200
     }
 }

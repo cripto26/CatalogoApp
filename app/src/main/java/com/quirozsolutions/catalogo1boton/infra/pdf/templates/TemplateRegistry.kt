@@ -10,7 +10,6 @@ object TemplateRegistry {
             CatalogTemplate.PROMOCIONAL -> PromocionalTemplate()
             CatalogTemplate.COMPACTA -> CompactaTemplate()
             CatalogTemplate.ELEGANTE -> EleganteTemplate()
-
         }
     }
 }

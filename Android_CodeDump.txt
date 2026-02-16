@@ -1,0 +1,4647 @@
+﻿==================== FILE: D:\CatalogoApp\app\build.gradle.kts ====================
+plugins {
+    id("com.android.application")
+    id("org.jetbrains.kotlin.android")
+    id("com.google.devtools.ksp")
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.9.24"
+}
+
+android {
+    namespace = "com.quirozsolutions.catalogo1boton"
+    compileSdk = 35
+
+    defaultConfig {
+        applicationId = "com.quirozsolutions.catalogo1boton"
+        minSdk = 26
+        targetSdk = 35
+        versionCode = 1
+        versionName = "1.0"
+    }
+
+    buildFeatures {
+        compose = true
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.14"
+    }
+
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+
+    packaging {
+        resources {
+            excludes += setOf(
+                "META-INF/DEPENDENCIES",
+                "META-INF/LICENSE",
+                "META-INF/LICENSE.txt",
+                "META-INF/LICENSE.md",
+                "META-INF/NOTICE",
+                "META-INF/NOTICE.txt",
+                "META-INF/NOTICE.md",
+                "META-INF/*.kotlin_module"
+            )
+        }
+    }
+}
+
+kotlin {
+    jvmToolchain(17)
+}
+
+dependencies {
+
+    /* ---------------- COMPOSE ---------------- */
+    val composeBom = platform("androidx.compose:compose-bom:2024.10.01")
+    implementation(composeBom)
+    androidTestImplementation(composeBom)
+
+    implementation("androidx.activity:activity-compose:1.9.3")
+    implementation("androidx.compose.ui:ui")
+    implementation("androidx.compose.ui:ui-tooling-preview")
+    debugImplementation("androidx.compose.ui:ui-tooling")
+    implementation("androidx.compose.material3:material3")
+    implementation("androidx.navigation:navigation-compose:2.8.3")
+
+    /* ---------------- DATA ---------------- */
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
+
+    // Coil (imagenes)
+    implementation("io.coil-kt:coil-compose:2.7.0")
+
+    /* ---------------- ROOM ---------------- */
+    implementation("androidx.room:room-runtime:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
+    ksp("androidx.room:room-compiler:2.6.1")
+
+    /* ---------------- WORK ---------------- */
+    implementation("androidx.work:work-runtime-ktx:2.9.1")
+
+    /* ---------------- JSON ---------------- */
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+
+    /* ---------------- GOOGLE AUTH ---------------- */
+    implementation("com.google.android.gms:play-services-auth:21.2.0")
+
+    /* ---------------- GOOGLE DRIVE (ESTABLE) ---------------- */
+    implementation("com.google.api-client:google-api-client-android:1.35.0")
+    implementation("com.google.http-client:google-http-client-android:1.43.3")
+    implementation("com.google.http-client:google-http-client-gson:1.43.3")
+    implementation("com.google.apis:google-api-services-drive:v3-rev20230815-2.0.0")
+    testImplementation("junit:junit:4.13.2")
+
+}
+
+
+
+==================== FILE: D:\CatalogoApp\app\build\intermediates\merged_manifest\debug\processDebugMainManifest\AndroidManifest.xml ====================
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.quirozsolutions.catalogo1boton"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-sdk
+        android:minSdkVersion="26"
+        android:targetSdkVersion="35" />
+
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <!-- Android 13+ -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+
+    <!-- Android 12- -->
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
+    <permission
+        android:name="com.quirozsolutions.catalogo1boton.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+        android:protectionLevel="signature" />
+
+    <uses-permission android:name="com.quirozsolutions.catalogo1boton.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+
+    <application
+        android:name="com.quirozsolutions.catalogo1boton.App"
+        android:allowBackup="false"
+        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+        android:debuggable="true"
+        android:extractNativeLibs="false"
+        android:icon="@mipmap/ic_launcher"
+        android:label="CatÃ¡logo Now"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:testOnly="true" >
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.quirozsolutions.catalogo1boton.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true" >
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+        <activity
+            android:name="com.quirozsolutions.catalogo1boton.MainActivity"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="androidx.compose.ui.tooling.PreviewActivity"
+            android:exported="true" />
+
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="com.quirozsolutions.catalogo1boton.androidx-startup"
+            android:exported="false" >
+            <meta-data
+                android:name="androidx.work.WorkManagerInitializer"
+                android:value="androidx.startup" />
+            <meta-data
+                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+                android:value="androidx.startup" />
+            <meta-data
+                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+                android:value="androidx.startup" />
+            <meta-data
+                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+                android:value="androidx.startup" />
+        </provider>
+
+        <service
+            android:name="androidx.work.impl.background.systemalarm.SystemAlarmService"
+            android:directBootAware="false"
+            android:enabled="@bool/enable_system_alarm_service_default"
+            android:exported="false" />
+        <service
+            android:name="androidx.work.impl.background.systemjob.SystemJobService"
+            android:directBootAware="false"
+            android:enabled="@bool/enable_system_job_service_default"
+            android:exported="true"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+        <service
+            android:name="androidx.work.impl.foreground.SystemForegroundService"
+            android:directBootAware="false"
+            android:enabled="@bool/enable_system_foreground_service_default"
+            android:exported="false" />
+
+        <receiver
+            android:name="androidx.work.impl.utils.ForceStopRunnable$BroadcastReceiver"
+            android:directBootAware="false"
+            android:enabled="true"
+            android:exported="false" />
+        <receiver
+            android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$BatteryChargingProxy"
+            android:directBootAware="false"
+            android:enabled="false"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="android.intent.action.ACTION_POWER_CONNECTED" />
+                <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$BatteryNotLowProxy"
+            android:directBootAware="false"
+            android:enabled="false"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="android.intent.action.BATTERY_OKAY" />
+                <action android:name="android.intent.action.BATTERY_LOW" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$StorageNotLowProxy"
+            android:directBootAware="false"
+            android:enabled="false"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="android.intent.action.DEVICE_STORAGE_LOW" />
+                <action android:name="android.intent.action.DEVICE_STORAGE_OK" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$NetworkStateProxy"
+            android:directBootAware="false"
+            android:enabled="false"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="androidx.work.impl.background.systemalarm.RescheduleReceiver"
+            android:directBootAware="false"
+            android:enabled="false"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.TIME_SET" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="androidx.work.impl.background.systemalarm.ConstraintProxyUpdateReceiver"
+            android:directBootAware="false"
+            android:enabled="@bool/enable_system_alarm_service_default"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="androidx.work.impl.background.systemalarm.UpdateProxies" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="androidx.work.impl.diagnostics.DiagnosticsReceiver"
+            android:directBootAware="false"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.DUMP" >
+            <intent-filter>
+                <action android:name="androidx.work.diagnostics.REQUEST_DIAGNOSTICS" />
+            </intent-filter>
+        </receiver>
+
+        <activity
+            android:name="com.google.android.gms.auth.api.signin.internal.SignInHubActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+        <!--
+            Service handling Google Sign-In user revocation. For apps that do not integrate with
+            Google Sign-In, this service will never be started.
+        -->
+        <service
+            android:name="com.google.android.gms.auth.api.signin.RevocationBoundService"
+            android:exported="true"
+            android:permission="com.google.android.gms.auth.api.signin.permission.REVOCATION_NOTIFICATION"
+            android:visibleToInstantApps="true" />
+
+        <activity
+            android:name="com.google.android.gms.common.api.GoogleApiActivity"
+            android:exported="false"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+
+        <service
+            android:name="androidx.room.MultiInstanceInvalidationService"
+            android:directBootAware="true"
+            android:exported="false" />
+
+        <receiver
+            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+            android:directBootAware="false"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.DUMP" >
+            <intent-filter>
+                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+            </intent-filter>
+        </receiver>
+    </application>
+
+</manifest>
+
+
+==================== FILE: D:\CatalogoApp\app\build\intermediates\merged_manifests\debug\processDebugManifest\AndroidManifest.xml ====================
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.quirozsolutions.catalogo1boton"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-sdk
+        android:minSdkVersion="26"
+        android:targetSdkVersion="35" />
+
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <!-- Android 13+ -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+
+    <!-- Android 12- -->
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
+    <permission
+        android:name="com.quirozsolutions.catalogo1boton.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+        android:protectionLevel="signature" />
+
+    <uses-permission android:name="com.quirozsolutions.catalogo1boton.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+
+    <application
+        android:name="com.quirozsolutions.catalogo1boton.App"
+        android:allowBackup="false"
+        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+        android:debuggable="true"
+        android:extractNativeLibs="false"
+        android:icon="@mipmap/ic_launcher"
+        android:label="CatÃ¡logo Now"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:testOnly="true" >
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.quirozsolutions.catalogo1boton.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true" >
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+        <activity
+            android:name="com.quirozsolutions.catalogo1boton.MainActivity"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="androidx.compose.ui.tooling.PreviewActivity"
+            android:exported="true" />
+
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="com.quirozsolutions.catalogo1boton.androidx-startup"
+            android:exported="false" >
+            <meta-data
+                android:name="androidx.work.WorkManagerInitializer"
+                android:value="androidx.startup" />
+            <meta-data
+                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+                android:value="androidx.startup" />
+            <meta-data
+                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+                android:value="androidx.startup" />
+            <meta-data
+                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+                android:value="androidx.startup" />
+        </provider>
+
+        <service
+            android:name="androidx.work.impl.background.systemalarm.SystemAlarmService"
+            android:directBootAware="false"
+            android:enabled="@bool/enable_system_alarm_service_default"
+            android:exported="false" />
+        <service
+            android:name="androidx.work.impl.background.systemjob.SystemJobService"
+            android:directBootAware="false"
+            android:enabled="@bool/enable_system_job_service_default"
+            android:exported="true"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+        <service
+            android:name="androidx.work.impl.foreground.SystemForegroundService"
+            android:directBootAware="false"
+            android:enabled="@bool/enable_system_foreground_service_default"
+            android:exported="false" />
+
+        <receiver
+            android:name="androidx.work.impl.utils.ForceStopRunnable$BroadcastReceiver"
+            android:directBootAware="false"
+            android:enabled="true"
+            android:exported="false" />
+        <receiver
+            android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$BatteryChargingProxy"
+            android:directBootAware="false"
+            android:enabled="false"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="android.intent.action.ACTION_POWER_CONNECTED" />
+                <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$BatteryNotLowProxy"
+            android:directBootAware="false"
+            android:enabled="false"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="android.intent.action.BATTERY_OKAY" />
+                <action android:name="android.intent.action.BATTERY_LOW" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$StorageNotLowProxy"
+            android:directBootAware="false"
+            android:enabled="false"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="android.intent.action.DEVICE_STORAGE_LOW" />
+                <action android:name="android.intent.action.DEVICE_STORAGE_OK" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$NetworkStateProxy"
+            android:directBootAware="false"
+            android:enabled="false"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="androidx.work.impl.background.systemalarm.RescheduleReceiver"
+            android:directBootAware="false"
+            android:enabled="false"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.TIME_SET" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="androidx.work.impl.background.systemalarm.ConstraintProxyUpdateReceiver"
+            android:directBootAware="false"
+            android:enabled="@bool/enable_system_alarm_service_default"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="androidx.work.impl.background.systemalarm.UpdateProxies" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="androidx.work.impl.diagnostics.DiagnosticsReceiver"
+            android:directBootAware="false"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.DUMP" >
+            <intent-filter>
+                <action android:name="androidx.work.diagnostics.REQUEST_DIAGNOSTICS" />
+            </intent-filter>
+        </receiver>
+
+        <activity
+            android:name="com.google.android.gms.auth.api.signin.internal.SignInHubActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+        <!--
+            Service handling Google Sign-In user revocation. For apps that do not integrate with
+            Google Sign-In, this service will never be started.
+        -->
+        <service
+            android:name="com.google.android.gms.auth.api.signin.RevocationBoundService"
+            android:exported="true"
+            android:permission="com.google.android.gms.auth.api.signin.permission.REVOCATION_NOTIFICATION"
+            android:visibleToInstantApps="true" />
+
+        <activity
+            android:name="com.google.android.gms.common.api.GoogleApiActivity"
+            android:exported="false"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+
+        <service
+            android:name="androidx.room.MultiInstanceInvalidationService"
+            android:directBootAware="true"
+            android:exported="false" />
+
+        <receiver
+            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+            android:directBootAware="false"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.DUMP" >
+            <intent-filter>
+                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+            </intent-filter>
+        </receiver>
+    </application>
+
+</manifest>
+
+
+==================== FILE: D:\CatalogoApp\app\build\intermediates\packaged_manifests\debug\processDebugManifestForPackage\AndroidManifest.xml ====================
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.quirozsolutions.catalogo1boton"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-sdk
+        android:minSdkVersion="26"
+        android:targetSdkVersion="35" />
+
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <!-- Android 13+ -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+
+    <!-- Android 12- -->
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
+    <permission
+        android:name="com.quirozsolutions.catalogo1boton.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+        android:protectionLevel="signature" />
+
+    <uses-permission android:name="com.quirozsolutions.catalogo1boton.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+
+    <application
+        android:name="com.quirozsolutions.catalogo1boton.App"
+        android:allowBackup="false"
+        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+        android:debuggable="true"
+        android:extractNativeLibs="false"
+        android:icon="@mipmap/ic_launcher"
+        android:label="CatÃ¡logo Now"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:testOnly="true" >
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.quirozsolutions.catalogo1boton.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true" >
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+        <activity
+            android:name="com.quirozsolutions.catalogo1boton.MainActivity"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="androidx.compose.ui.tooling.PreviewActivity"
+            android:exported="true" />
+
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="com.quirozsolutions.catalogo1boton.androidx-startup"
+            android:exported="false" >
+            <meta-data
+                android:name="androidx.work.WorkManagerInitializer"
+                android:value="androidx.startup" />
+            <meta-data
+                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+                android:value="androidx.startup" />
+            <meta-data
+                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+                android:value="androidx.startup" />
+            <meta-data
+                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+                android:value="androidx.startup" />
+        </provider>
+
+        <service
+            android:name="androidx.work.impl.background.systemalarm.SystemAlarmService"
+            android:directBootAware="false"
+            android:enabled="@bool/enable_system_alarm_service_default"
+            android:exported="false" />
+        <service
+            android:name="androidx.work.impl.background.systemjob.SystemJobService"
+            android:directBootAware="false"
+            android:enabled="@bool/enable_system_job_service_default"
+            android:exported="true"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+        <service
+            android:name="androidx.work.impl.foreground.SystemForegroundService"
+            android:directBootAware="false"
+            android:enabled="@bool/enable_system_foreground_service_default"
+            android:exported="false" />
+
+        <receiver
+            android:name="androidx.work.impl.utils.ForceStopRunnable$BroadcastReceiver"
+            android:directBootAware="false"
+            android:enabled="true"
+            android:exported="false" />
+        <receiver
+            android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$BatteryChargingProxy"
+            android:directBootAware="false"
+            android:enabled="false"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="android.intent.action.ACTION_POWER_CONNECTED" />
+                <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$BatteryNotLowProxy"
+            android:directBootAware="false"
+            android:enabled="false"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="android.intent.action.BATTERY_OKAY" />
+                <action android:name="android.intent.action.BATTERY_LOW" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$StorageNotLowProxy"
+            android:directBootAware="false"
+            android:enabled="false"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="android.intent.action.DEVICE_STORAGE_LOW" />
+                <action android:name="android.intent.action.DEVICE_STORAGE_OK" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$NetworkStateProxy"
+            android:directBootAware="false"
+            android:enabled="false"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="androidx.work.impl.background.systemalarm.RescheduleReceiver"
+            android:directBootAware="false"
+            android:enabled="false"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.TIME_SET" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="androidx.work.impl.background.systemalarm.ConstraintProxyUpdateReceiver"
+            android:directBootAware="false"
+            android:enabled="@bool/enable_system_alarm_service_default"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="androidx.work.impl.background.systemalarm.UpdateProxies" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="androidx.work.impl.diagnostics.DiagnosticsReceiver"
+            android:directBootAware="false"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.DUMP" >
+            <intent-filter>
+                <action android:name="androidx.work.diagnostics.REQUEST_DIAGNOSTICS" />
+            </intent-filter>
+        </receiver>
+
+        <activity
+            android:name="com.google.android.gms.auth.api.signin.internal.SignInHubActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+        <!--
+            Service handling Google Sign-In user revocation. For apps that do not integrate with
+            Google Sign-In, this service will never be started.
+        -->
+        <service
+            android:name="com.google.android.gms.auth.api.signin.RevocationBoundService"
+            android:exported="true"
+            android:permission="com.google.android.gms.auth.api.signin.permission.REVOCATION_NOTIFICATION"
+            android:visibleToInstantApps="true" />
+
+        <activity
+            android:name="com.google.android.gms.common.api.GoogleApiActivity"
+            android:exported="false"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+
+        <service
+            android:name="androidx.room.MultiInstanceInvalidationService"
+            android:directBootAware="true"
+            android:exported="false" />
+
+        <receiver
+            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+            android:directBootAware="false"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.DUMP" >
+            <intent-filter>
+                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+            </intent-filter>
+        </receiver>
+    </application>
+
+</manifest>
+
+
+==================== FILE: D:\CatalogoApp\app\proguard-rules.pro ====================
+# Add project specific ProGuard rules here.
+# You can control the set of applied configuration files using the
+# proguardFiles setting in build.gradle.
+#
+# For more details, see
+#   http://developer.android.com/guide/developing/tools/proguard.html
+
+# If your project uses WebView with JS, uncomment the following
+# and specify the fully qualified class name to the JavaScript interface
+# class:
+#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
+#   public *;
+#}
+
+# Uncomment this to preserve the line number information for
+# debugging stack traces.
+#-keepattributes SourceFile,LineNumberTable
+
+# If you keep the line number information, uncomment this to
+# hide the original source file name.
+#-renamesourcefileattribute SourceFile
+
+
+==================== FILE: D:\CatalogoApp\app\src\androidTest\java\com\quirozsolutions\catalogo1boton\ExampleInstrumentedTest.kt ====================
+package com.quirozsolutions.catalogo1boton
+
+import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.ext.junit.runners.AndroidJUnit4
+
+import org.junit.Test
+import org.junit.runner.RunWith
+
+import org.junit.Assert.*
+
+/**
+ * Instrumented test, which will execute on an Android device.
+ *
+ * See [testing documentation](http://d.android.com/tools/testing).
+ */
+@RunWith(AndroidJUnit4::class)
+class ExampleInstrumentedTest {
+    @Test
+    fun useAppContext() {
+        // Context of the app under test.
+        val appContext = InstrumentationRegistry.getInstrumentation().targetContext
+        assertEquals("com.quirozsolutions.catalogo1boton", appContext.packageName)
+    }
+}
+
+
+==================== FILE: D:\CatalogoApp\app\src\main\AndroidManifest.xml ====================
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <!-- Android 13+ -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+
+    <!-- Android 12- -->
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+
+    <application
+        android:name=".App"
+        android:allowBackup="false"
+        android:supportsRtl="true"
+        android:label="CatÃ¡logo Now"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round">
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+    </application>
+
+</manifest>
+
+
+
+==================== FILE: D:\CatalogoApp\app\src\main\java\com\quirozsolutions\catalogo1boton\App.kt ====================
+package com.quirozsolutions.catalogo1boton
+
+import android.app.Application
+import androidx.work.Configuration
+
+class App : Application(), Configuration.Provider {
+
+    lateinit var container: AppContainer
+        private set
+
+    override fun onCreate() {
+        super.onCreate()
+        container = AppContainer(this)
+    }
+
+    override val workManagerConfiguration: Configuration
+        get() = Configuration.Builder()
+            .setMinimumLoggingLevel(android.util.Log.INFO)
+            .build()
+}
+
+
+
+==================== FILE: D:\CatalogoApp\app\src\main\java\com\quirozsolutions\catalogo1boton\AppContainer.kt ====================
+package com.quirozsolutions.catalogo1boton
+
+import android.content.Context
+import com.quirozsolutions.catalogo1boton.data.db.AppDatabase
+import com.quirozsolutions.catalogo1boton.data.repo.ProductRepository
+import com.quirozsolutions.catalogo1boton.infra.backup.BackupManager
+import com.quirozsolutions.catalogo1boton.infra.backup.RestoreManager
+import com.quirozsolutions.catalogo1boton.infra.drive.DriveSyncManager
+import com.quirozsolutions.catalogo1boton.infra.drive.GoogleAuthManager
+import com.quirozsolutions.catalogo1boton.infra.files.ImageStore
+import com.quirozsolutions.catalogo1boton.infra.pdf.PdfCatalogGenerator
+import com.quirozsolutions.catalogo1boton.infra.work.WorkScheduler
+import com.quirozsolutions.catalogo1boton.ui.state.AppState
+
+class AppContainer(context: Context) {
+
+    private val db = AppDatabase.build(context)
+
+    val productRepository = ProductRepository(db.productDao())
+    val imageStore = ImageStore(context)
+
+    val pdfGenerator = PdfCatalogGenerator(context, imageStore)
+
+    val backupManager = BackupManager(context, imageStore, productRepository)
+    val restoreManager = RestoreManager(context, imageStore, productRepository)
+
+    val authManager = GoogleAuthManager(context)
+    val driveSyncManager = DriveSyncManager(context, authManager)
+
+    val workScheduler = WorkScheduler(context)
+
+    // âœ… Nuevo: preferencias (cliente, redes del vendedor, logo)
+    val appState = AppState(context, this)
+}
+
+
+
+==================== FILE: D:\CatalogoApp\app\src\main\java\com\quirozsolutions\catalogo1boton\data\db\AppDatabase.kt ====================
+package com.quirozsolutions.catalogo1boton.data.db
+
+import android.content.Context
+import androidx.room.Database
+import androidx.room.Room
+import androidx.room.RoomDatabase
+
+@Database(entities = [ProductEntity::class], version = 1, exportSchema = true)
+abstract class AppDatabase : RoomDatabase() {
+    abstract fun productDao(): ProductDao
+
+    companion object {
+        fun build(context: Context): AppDatabase =
+            Room.databaseBuilder(context, AppDatabase::class.java, "catalogo.db")
+                .fallbackToDestructiveMigration()
+                .build()
+    }
+}
+
+
+
+==================== FILE: D:\CatalogoApp\app\src\main\java\com\quirozsolutions\catalogo1boton\data\db\ProductDao.kt ====================
+package com.quirozsolutions.catalogo1boton.data.db
+
+
+import androidx.room.*
+import kotlinx.coroutines.flow.Flow
+
+@Dao
+interface ProductDao {
+
+    @Query("SELECT * FROM products ORDER BY updatedAt DESC")
+    fun observeAll(): Flow<List<ProductEntity>>
+
+    @Query("SELECT * FROM products WHERE id = :id LIMIT 1")
+    suspend fun getById(id: String): ProductEntity?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsert(entity: ProductEntity)
+
+    @Query("DELETE FROM products WHERE id = :id")
+    suspend fun deleteById(id: String)
+
+    @Query("SELECT * FROM products ORDER BY updatedAt DESC")
+    suspend fun getAllOnce(): List<ProductEntity>
+}
+
+
+
+==================== FILE: D:\CatalogoApp\app\src\main\java\com\quirozsolutions\catalogo1boton\data\db\ProductEntity.kt ====================
+package com.quirozsolutions.catalogo1boton.data.db
+
+
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity(tableName = "products")
+data class ProductEntity(
+    @PrimaryKey val id: String,
+    val priceCents: Long,
+    val description: String?,
+    val imagePath: String,
+    val createdAt: Long,
+    val updatedAt: Long
+)
+
+
+
+==================== FILE: D:\CatalogoApp\app\src\main\java\com\quirozsolutions\catalogo1boton\data\db\repo\ProductRepository.kt ====================
+package com.quirozsolutions.catalogo1boton.data.repo
+
+
+import com.quirozsolutions.catalogo1boton.data.db.ProductDao
+import com.quirozsolutions.catalogo1boton.data.db.ProductEntity
+import com.quirozsolutions.catalogo1boton.domain.model.Product
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+
+class ProductRepository(private val dao: ProductDao) {
+
+    fun observeAll(): Flow<List<Product>> =
+        dao.observeAll().map { list -> list.map { it.toDomain() } }
+
+    suspend fun getAllOnce(): List<Product> =
+        dao.getAllOnce().map { it.toDomain() }
+
+    suspend fun getById(id: String): Product? =
+        dao.getById(id)?.toDomain()
+
+    suspend fun upsert(p: Product) {
+        dao.upsert(p.toEntity())
+    }
+
+    suspend fun deleteById(id: String) {
+        dao.deleteById(id)
+    }
+
+    private fun ProductEntity.toDomain() = Product(
+        id = id,
+        priceCents = priceCents,
+        description = description,
+        imagePath = imagePath,
+        createdAt = createdAt,
+        updatedAt = updatedAt
+    )
+
+    private fun Product.toEntity() = ProductEntity(
+        id = id,
+        priceCents = priceCents,
+        description = description,
+        imagePath = imagePath,
+        createdAt = createdAt,
+        updatedAt = updatedAt
+    )
+}
+
+
+
+==================== FILE: D:\CatalogoApp\app\src\main\java\com\quirozsolutions\catalogo1boton\domain\model\BackupModels.kt ====================
+package com.quirozsolutions.catalogo1boton.domain.model
+
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class BackupMetadata(
+    val createdAt: Long,
+    val clientName: String,
+    val deviceName: String,
+    val schemaVersion: Int = 1
+)
+
+@Serializable
+data class BackupProduct(
+    val id: String,
+    val priceCents: Long,
+    val description: String?,
+    val imageFileName: String,
+    val createdAt: Long,
+    val updatedAt: Long
+)
+
+@Serializable
+data class BackupPayload(
+    val metadata: BackupMetadata,
+    val products: List<BackupProduct>,
+    val sha256: String
+)
+
+
+
+==================== FILE: D:\CatalogoApp\app\src\main\java\com\quirozsolutions\catalogo1boton\domain\model\CatalogTemplate.kt ====================
+package com.quirozsolutions.catalogo1boton.domain.model
+
+enum class CatalogTemplate {
+    MINIMALISTA,
+    PROMOCIONAL,
+    COMPACTA,
+    ELEGANTE
+}
+
+
+
+==================== FILE: D:\CatalogoApp\app\src\main\java\com\quirozsolutions\catalogo1boton\domain\model\Product.kt ====================
+package com.quirozsolutions.catalogo1boton.domain.model
+
+
+data class Product(
+    val id: String,
+    val priceCents: Long,
+    val description: String?,
+    val imagePath: String,
+    val createdAt: Long,
+    val updatedAt: Long
+)
+
+
+
+==================== FILE: D:\CatalogoApp\app\src\main\java\com\quirozsolutions\catalogo1boton\domain\model\ProductDisplay.kt ====================
+package com.quirozsolutions.catalogo1boton.domain.model
+
+/**
+ * Nombre â€œvisibleâ€ del producto para PDF/UI.
+ * Regla:
+ * - Si hay descripciÃ³n -> Ãºsala.
+ * - Si NO hay descripciÃ³n -> NO mostrar UUID, usar un texto genÃ©rico.
+ */
+val Product.displayName: String
+    get() {
+        val d = (description ?: "").trim()
+        return if (d.isNotEmpty()) d else "Producto"
+    }
+
+
+
+==================== FILE: D:\CatalogoApp\app\src\main\java\com\quirozsolutions\catalogo1boton\infra\backup\BackupManager.kt ====================
+package com.quirozsolutions.catalogo1boton.infra.backup
+
+
+import android.content.Context
+import android.os.Build
+import com.quirozsolutions.catalogo1boton.data.repo.ProductRepository
+import com.quirozsolutions.catalogo1boton.domain.model.*
+import com.quirozsolutions.catalogo1boton.infra.files.ImageStore
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import java.io.*
+import java.security.MessageDigest
+import java.util.zip.ZipEntry
+import java.util.zip.ZipOutputStream
+
+class BackupManager(
+    private val context: Context,
+    private val imageStore: ImageStore,
+    private val productRepo: ProductRepository
+) {
+    private val json = Json { prettyPrint = true; ignoreUnknownKeys = true }
+
+    fun latestBackupFile(): File =
+        File(context.filesDir, "backups/catalogo_latest.zip").apply {
+            parentFile?.mkdirs()
+        }
+
+    suspend fun buildLatestBackup(clientName: String): File {
+        val products = productRepo.getAllOnce()
+        val meta = BackupMetadata(
+            createdAt = System.currentTimeMillis(),
+            clientName = clientName,
+            deviceName = "${Build.MANUFACTURER} ${Build.MODEL}"
+        )
+
+        // Copiamos imÃ¡genes al zip con nombre estable
+        val backupProducts = products.map { p ->
+            val imageName = "${p.id}.jpg"
+            BackupProduct(
+                id = p.id,
+                priceCents = p.priceCents,
+                description = p.description,
+                imageFileName = imageName,
+                createdAt = p.createdAt,
+                updatedAt = p.updatedAt
+            )
+        }
+
+        // Creamos payload primero con sha vacÃ­o, luego calculamos sha final del zip
+        val tempPayload = BackupPayload(meta, backupProducts, sha256 = "")
+        val tempJsonBytes = json.encodeToString(tempPayload).encodeToByteArray()
+
+        val outFile = latestBackupFile()
+        if (outFile.exists()) outFile.delete()
+
+        ZipOutputStream(BufferedOutputStream(FileOutputStream(outFile))).use { zos ->
+            // metadata.json
+            zos.putNextEntry(ZipEntry("payload.json"))
+            zos.write(tempJsonBytes)
+            zos.closeEntry()
+
+            // images/
+            backupProducts.forEach { bp ->
+                val prod = products.first { it.id == bp.id }
+                val imgFile = File(prod.imagePath)
+                if (imgFile.exists()) {
+                    zos.putNextEntry(ZipEntry("images/${bp.imageFileName}"))
+                    imgFile.inputStream().use { it.copyTo(zos) }
+                    zos.closeEntry()
+                }
+            }
+        }
+
+        // Calcula sha del zip y re-escribe payload.json con sha real (simple y robusto)
+        val sha = sha256(outFile)
+        val finalPayload = tempPayload.copy(sha256 = sha)
+        val finalJsonBytes = json.encodeToString(finalPayload).encodeToByteArray()
+
+        // Reescribir zip: (para MVP es aceptable; si quieres optimizar, se hace zip con manifest al final)
+        val rebuilt = File(context.filesDir, "backups/catalogo_latest_rebuilt.zip")
+        ZipOutputStream(BufferedOutputStream(FileOutputStream(rebuilt))).use { zos ->
+            zos.putNextEntry(ZipEntry("payload.json"))
+            zos.write(finalJsonBytes)
+            zos.closeEntry()
+
+            // Re-empaca images/
+            backupProducts.forEach { bp ->
+                val prod = products.first { it.id == bp.id }
+                val imgFile = File(prod.imagePath)
+                if (imgFile.exists()) {
+                    zos.putNextEntry(ZipEntry("images/${bp.imageFileName}"))
+                    imgFile.inputStream().use { it.copyTo(zos) }
+                    zos.closeEntry()
+                }
+            }
+        }
+
+        outFile.delete()
+        rebuilt.renameTo(outFile)
+        return outFile
+    }
+
+    private fun sha256(file: File): String {
+        val md = MessageDigest.getInstance("SHA-256")
+        file.inputStream().use { input ->
+            val buf = ByteArray(8192)
+            while (true) {
+                val r = input.read(buf)
+                if (r <= 0) break
+                md.update(buf, 0, r)
+            }
+        }
+        return md.digest().joinToString("") { "%02x".format(it) }
+    }
+}
+
+
+
+==================== FILE: D:\CatalogoApp\app\src\main\java\com\quirozsolutions\catalogo1boton\infra\backup\RestoreManager.kt ====================
+package com.quirozsolutions.catalogo1boton.infra.backup
+
+import android.content.Context
+import com.quirozsolutions.catalogo1boton.data.repo.ProductRepository
+import com.quirozsolutions.catalogo1boton.domain.model.BackupPayload
+import com.quirozsolutions.catalogo1boton.domain.model.Product
+import com.quirozsolutions.catalogo1boton.infra.files.ImageStore
+import kotlinx.serialization.json.Json
+import java.io.File
+import java.util.UUID
+import java.util.zip.ZipFile
+
+class RestoreManager(
+    private val context: Context,
+    private val imageStore: ImageStore,
+    private val productRepo: ProductRepository
+) {
+    private val json = Json { ignoreUnknownKeys = true }
+
+    suspend fun restoreFromZip(zipFile: File) {
+        ZipFile(zipFile).use { zf ->
+            val payloadEntry = zf.getEntry("payload.json") ?: error("payload.json no existe")
+            val payloadText = zf.getInputStream(payloadEntry).bufferedReader().readText()
+            val payload = json.decodeFromString(BackupPayload.serializer(), payloadText)
+
+            payload.products.forEach { bp ->
+                val imgEntry = zf.getEntry("images/${bp.imageFileName}")
+                val imagePath = if (imgEntry != null) {
+                    // Guarda la imagen en el almacenamiento interno de la app
+                    val tmp = File(context.cacheDir, "restore_${UUID.randomUUID()}.jpg")
+                    zf.getInputStream(imgEntry).use { input -> tmp.outputStream().use { input.copyTo(it) } }
+                    imageStore.saveFromFile(tmp).also { tmp.delete() }
+                } else {
+                    // Si falta imagen, conserva placeholder (MVP: se puede manejar mejor)
+                    ""
+                }
+
+                val now = System.currentTimeMillis()
+                val product = Product(
+                    id = bp.id,
+                    priceCents = bp.priceCents,
+                    description = bp.description,
+                    imagePath = imagePath,
+                    createdAt = bp.createdAt,
+                    updatedAt = maxOf(bp.updatedAt, now)
+                )
+                productRepo.upsert(product)
+            }
+        }
+    }
+}
+
+
+
+==================== FILE: D:\CatalogoApp\app\src\main\java\com\quirozsolutions\catalogo1boton\infra\drive\DriveSyncManager.kt ====================
+package com.quirozsolutions.catalogo1boton.infra.drive
+
+import android.content.Context
+import android.util.Log
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.api.client.extensions.android.http.AndroidHttp
+import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
+import com.google.api.client.http.FileContent
+import com.google.api.client.json.gson.GsonFactory
+import com.google.api.services.drive.Drive
+import com.google.api.services.drive.DriveScopes
+import com.google.api.services.drive.model.FileList
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.io.File
+import java.io.FileOutputStream
+
+class DriveSyncManager(
+    private val context: Context,
+    private val auth: GoogleAuthManager
+) {
+    private val backupsFolderName = "Catalogo 1 BotÃ³n Backups"
+    private val latestBackupName = "catalogo_latest.zip"
+
+    private fun driveService(account: GoogleSignInAccount): Drive {
+        val credential = GoogleAccountCredential.usingOAuth2(
+            context,
+            listOf(DriveScopes.DRIVE_FILE)
+        )
+        credential.selectedAccount = account.account
+
+        return Drive.Builder(
+            AndroidHttp.newCompatibleTransport(),
+            GsonFactory.getDefaultInstance(),
+            credential
+        )
+            .setApplicationName("Catalogo 1 BotÃ³n")
+            .build()
+    }
+
+    private suspend fun findFolderId(drive: Drive, folderName: String, parentId: String): String? =
+        withContext(Dispatchers.IO) {
+            val q =
+                "mimeType='application/vnd.google-apps.folder' and name='${folderName}' and trashed=false and '${parentId}' in parents"
+
+            val list: FileList = drive.files().list()
+                .setSpaces("drive")
+                .setQ(q)
+                .setFields("files(id,name)")
+                .setSupportsAllDrives(true)
+                .setIncludeItemsFromAllDrives(true)
+                .execute()
+
+            list.files?.firstOrNull()?.id
+        }
+
+    private suspend fun createFolder(drive: Drive, folderName: String, parentId: String): String =
+        withContext(Dispatchers.IO) {
+            val metadata = com.google.api.services.drive.model.File().apply {
+                name = folderName
+                mimeType = "application/vnd.google-apps.folder"
+                parents = listOf(parentId)
+            }
+
+            drive.files().create(metadata)
+                .setFields("id")
+                .setSupportsAllDrives(true)
+                .execute()
+                .id
+        }
+
+    private suspend fun ensureBackupsFolder(drive: Drive, sharedFolderId: String?): String =
+        withContext(Dispatchers.IO) {
+            val parent = sharedFolderId?.takeIf { it.isNotBlank() } ?: "root"
+            val existingId = findFolderId(drive, backupsFolderName, parent)
+            existingId ?: createFolder(drive, backupsFolderName, parent)
+        }
+
+    private suspend fun findFileInFolder(drive: Drive, fileName: String, folderId: String): String? =
+        withContext(Dispatchers.IO) {
+            val q = "name='${fileName}' and trashed=false and '${folderId}' in parents"
+
+            val list: FileList = drive.files().list()
+                .setSpaces("drive")
+                .setQ(q)
+                .setFields("files(id,name,modifiedTime)")
+                .setSupportsAllDrives(true)
+                .setIncludeItemsFromAllDrives(true)
+                .execute()
+
+            list.files
+                ?.maxByOrNull { it.modifiedTime?.value ?: 0L }
+                ?.id
+        }
+
+    suspend fun uploadLatestBackup(
+        account: GoogleSignInAccount,
+        backupZip: File,
+        clientName: String,
+        sharedFolderId: String?
+    ) = withContext(Dispatchers.IO) {
+        Log.d("DRIVE_SYNC", "uploadLatestBackup() llamado")
+        Log.d("DRIVE_SYNC", "Account: ${account.email}")
+        Log.d("DRIVE_SYNC", "ZIP existe: ${backupZip.exists()} tamaÃ±o=${backupZip.length()}")
+        Log.d("DRIVE_SYNC", "sharedFolderId=$sharedFolderId")
+
+        val drive = driveService(account)
+
+        Log.d("DRIVE_SYNC", "Buscando / creando carpeta en Drive.")
+        val folderId = ensureBackupsFolder(drive, sharedFolderId)
+        Log.d("DRIVE_SYNC", "FolderId obtenido: $folderId")
+
+        val existingId = findFileInFolder(drive, latestBackupName, folderId)
+
+        val mediaContent = FileContent("application/zip", backupZip)
+
+        val result = if (existingId == null) {
+            Log.d("DRIVE_SYNC", "No existe backup previo -> creando archivo")
+
+            val createMeta = com.google.api.services.drive.model.File().apply {
+                name = latestBackupName
+                parents = listOf(folderId) // âœ… SOLO en create
+                description = "Ãšltimo backup de $clientName"
+            }
+
+            drive.files().create(createMeta, mediaContent)
+                .setFields("id, modifiedTime")
+                .setSupportsAllDrives(true)
+                .execute()
+        } else {
+            Log.d("DRIVE_SYNC", "Existe backup previo -> actualizando archivo id=$existingId")
+
+            // âœ… IMPORTANTE: en update NO envÃ­es parents
+            val updateMeta = com.google.api.services.drive.model.File().apply {
+                name = latestBackupName
+                description = "Ãšltimo backup de $clientName"
+            }
+
+            drive.files().update(existingId, updateMeta, mediaContent)
+                .setFields("id, modifiedTime")
+                .setSupportsAllDrives(true)
+                .execute()
+        }
+
+        Log.d("DRIVE_SYNC", "Backup subido OK. fileId=${result.id}")
+    }
+
+    suspend fun downloadLatestBackup(
+        account: GoogleSignInAccount,
+        sharedFolderId: String?
+    ): File? = withContext(Dispatchers.IO) {
+        Log.d("DRIVE_SYNC", "downloadLatestBackup() llamado")
+        Log.d("DRIVE_SYNC", "Account: ${account.email}")
+        Log.d("DRIVE_SYNC", "sharedFolderId=$sharedFolderId")
+
+        val drive = driveService(account)
+
+        val folderId = ensureBackupsFolder(drive, sharedFolderId)
+        Log.d("DRIVE_SYNC", "FolderId (download): $folderId")
+
+        val fileId = findFileInFolder(drive, latestBackupName, folderId)
+            ?: run {
+                Log.d("DRIVE_SYNC", "No se encontrÃ³ $latestBackupName en la carpeta")
+                return@withContext null
+            }
+
+        val out = File(context.cacheDir, "drive_latest_backup.zip")
+        if (out.exists()) out.delete()
+
+        Log.d("DRIVE_SYNC", "Descargando fileId=$fileId -> ${out.absolutePath}")
+        FileOutputStream(out).use { output ->
+            drive.files().get(fileId)
+                .setSupportsAllDrives(true)
+                .executeMediaAndDownloadTo(output)
+        }
+
+        Log.d("DRIVE_SYNC", "Descarga OK")
+        out
+    }
+}
+
+
+
+==================== FILE: D:\CatalogoApp\app\src\main\java\com\quirozsolutions\catalogo1boton\infra\drive\GoogleAuthManager.kt ====================
+package com.quirozsolutions.catalogo1boton.infra.drive
+
+import android.content.Context
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.Scope
+import com.google.api.services.drive.DriveScopes
+
+class GoogleAuthManager(private val context: Context) {
+
+    // SoluciÃ³n A: archivos visibles creados/gestionados por tu app
+    private val scopes = listOf(
+        Scope(DriveScopes.DRIVE_FILE)
+    )
+
+    fun signInClient(): GoogleSignInClient {
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestEmail()
+            .requestScopes(scopes.first(), *scopes.drop(1).toTypedArray())
+            .build()
+
+        return GoogleSignIn.getClient(context, gso)
+    }
+
+    fun lastSignedInAccount(): GoogleSignInAccount? =
+        GoogleSignIn.getLastSignedInAccount(context)
+}
+
+
+
+==================== FILE: D:\CatalogoApp\app\src\main\java\com\quirozsolutions\catalogo1boton\infra\files\ImageStore.kt ====================
+package com.quirozsolutions.catalogo1boton.infra.files
+
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Matrix
+import android.media.ExifInterface
+import android.net.Uri
+import java.io.File
+import java.io.FileOutputStream
+import java.util.UUID
+import kotlin.math.max
+import kotlin.math.roundToInt
+
+class ImageStore(private val context: Context) {
+
+    private val imagesDir: File
+        get() = File(context.filesDir, "images").apply { mkdirs() }
+
+    fun newTempCameraFile(): File =
+        File(context.cacheDir, "camera_${UUID.randomUUID()}.jpg")
+
+    /**
+     * Guarda una imagen ENTRANTE (galerÃ­a) ya optimizada:
+     * - Re-muestrea a un maxSide razonable (para no guardar 4000x3000).
+     * - Rota por EXIF (para no quedar girada en PDF).
+     * - Comprime en JPEG con calidad fija.
+     *
+     * Esto NO solo ayuda al PDF; tambiÃ©n baja peso de backups/sync.
+     */
+    fun saveFromUri(uri: Uri): String {
+        val id = UUID.randomUUID().toString()
+        val outFile = File(imagesDir, "$id.jpg")
+
+        // Si no se puede optimizar (por ejemplo, stream raro), se cae a copia directa.
+        return runCatching {
+            optimizeAndSaveFromUri(uri, outFile)
+            outFile.absolutePath
+        }.getOrElse {
+            context.contentResolver.openInputStream(uri).use { input ->
+                requireNotNull(input) { "No se pudo abrir el URI de imagen" }
+                FileOutputStream(outFile).use { output -> input.copyTo(output) }
+            }
+            outFile.absolutePath
+        }
+    }
+
+    /**
+     * Guarda una imagen ENTRANTE (archivo, tÃ­pico cÃ¡mara) ya optimizada.
+     */
+    fun saveFromFile(file: File): String {
+        val id = UUID.randomUUID().toString()
+        val outFile = File(imagesDir, "$id.jpg")
+
+        return runCatching {
+            optimizeAndSaveFromFile(file, outFile)
+            outFile.absolutePath
+        }.getOrElse {
+            file.copyTo(outFile, overwrite = true)
+            outFile.absolutePath
+        }
+    }
+
+    /**
+     * Carga bitmap genÃ©rico (por compatibilidad).
+     */
+    fun loadBitmap(path: String, maxSidePx: Int = DEFAULT_LOAD_MAX_SIDE_PX): Bitmap? {
+        val file = File(path)
+        if (!file.exists()) return null
+
+        val decoded = decodeScaledBitmapFromFile(path, maxSidePx) ?: return null
+        val rotated = rotateIfNeeded(decoded, path)
+        return rotated
+    }
+
+    /**
+     * Carga bitmap ESPECÃFICO para PDF:
+     * - Decodifica con inSampleSize segÃºn el tamaÃ±o que necesitas.
+     * - Si aun queda un poco grande, escala EXACTO hacia abajo.
+     * - Rota por EXIF.
+     *
+     * El peso del PDF baja MUCHO porque estÃ¡s metiendo menos pÃ­xeles por imagen.
+     */
+    fun loadBitmapForPdf(path: String, targetMaxSidePx: Int): Bitmap? {
+        val file = File(path)
+        if (!file.exists()) return null
+
+        val safeTarget = targetMaxSidePx.coerceIn(120, 2400)
+
+        val decoded = decodeScaledBitmapFromFile(path, safeTarget) ?: return null
+        val rotated = rotateIfNeeded(decoded, path)
+
+        // Escala exacta hacia abajo si todavÃ­a supera el target (inSampleSize solo baja en potencias de 2)
+        val maxSide = max(rotated.width, rotated.height)
+        if (maxSide <= safeTarget) return rotated
+
+        val scale = safeTarget.toFloat() / maxSide.toFloat()
+        val newW = (rotated.width * scale).roundToInt().coerceAtLeast(1)
+        val newH = (rotated.height * scale).roundToInt().coerceAtLeast(1)
+
+        val scaled = Bitmap.createScaledBitmap(rotated, newW, newH, true)
+        if (scaled !== rotated) rotated.recycle()
+        return scaled
+    }
+
+    fun delete(path: String) {
+        runCatching { File(path).delete() }
+    }
+
+    // -------------------------
+    // OptimizaciÃ³n al guardar
+    // -------------------------
+
+    private fun optimizeAndSaveFromUri(uri: Uri, outFile: File) {
+        val cr = context.contentResolver
+
+        // 1) Leer EXIF (rotaciÃ³n)
+        val rotationDegrees = cr.openInputStream(uri).use { input ->
+            if (input == null) 0 else readRotationDegrees(input)
+        }
+
+        // 2) Leer bounds
+        val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+        cr.openInputStream(uri).use { input ->
+            requireNotNull(input) { "No se pudo abrir el URI de imagen" }
+            BitmapFactory.decodeStream(input, null, bounds)
+        }
+
+        val inSample = calculateInSampleSize(bounds.outWidth, bounds.outHeight, SAVE_MAX_SIDE_PX)
+
+        // 3) Decodificar ya muestreada
+        val decodeOpts = BitmapFactory.Options().apply {
+            inSampleSize = inSample
+            inPreferredConfig = Bitmap.Config.RGB_565 // reduce memoria
+        }
+
+        val bmp = cr.openInputStream(uri).use { input ->
+            requireNotNull(input) { "No se pudo abrir el URI de imagen" }
+            BitmapFactory.decodeStream(input, null, decodeOpts)
+        } ?: throw IllegalStateException("No se pudo decodificar la imagen")
+
+        // 4) Rotar si aplica
+        val rotated = rotateBitmap(bmp, rotationDegrees)
+
+        // 5) Guardar JPEG comprimido
+        FileOutputStream(outFile).use { fos ->
+            rotated.compress(Bitmap.CompressFormat.JPEG, SAVE_JPEG_QUALITY, fos)
+        }
+
+        if (rotated !== bmp) bmp.recycle()
+        rotated.recycle()
+    }
+
+    private fun optimizeAndSaveFromFile(inputFile: File, outFile: File) {
+        val rotationDegrees = runCatching {
+            ExifInterface(inputFile.absolutePath).let { exif ->
+                exifOrientationToDegrees(
+                    exif.getAttributeInt(
+                        ExifInterface.TAG_ORIENTATION,
+                        ExifInterface.ORIENTATION_NORMAL
+                    )
+                )
+            }
+        }.getOrDefault(0)
+
+        val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+        BitmapFactory.decodeFile(inputFile.absolutePath, bounds)
+
+        val inSample = calculateInSampleSize(bounds.outWidth, bounds.outHeight, SAVE_MAX_SIDE_PX)
+
+        val decodeOpts = BitmapFactory.Options().apply {
+            inSampleSize = inSample
+            inPreferredConfig = Bitmap.Config.RGB_565
+        }
+
+        val bmp = BitmapFactory.decodeFile(inputFile.absolutePath, decodeOpts)
+            ?: throw IllegalStateException("No se pudo decodificar la imagen")
+
+        val rotated = rotateBitmap(bmp, rotationDegrees)
+
+        FileOutputStream(outFile).use { fos ->
+            rotated.compress(Bitmap.CompressFormat.JPEG, SAVE_JPEG_QUALITY, fos)
+        }
+
+        if (rotated !== bmp) bmp.recycle()
+        rotated.recycle()
+    }
+
+    // -------------------------
+    // Decode helpers
+    // -------------------------
+
+    private fun decodeScaledBitmapFromFile(path: String, maxSidePx: Int): Bitmap? {
+        val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+        BitmapFactory.decodeFile(path, bounds)
+
+        val inSample = calculateInSampleSize(bounds.outWidth, bounds.outHeight, maxSidePx)
+
+        val opts = BitmapFactory.Options().apply {
+            inSampleSize = inSample
+            inPreferredConfig = Bitmap.Config.RGB_565
+        }
+        return BitmapFactory.decodeFile(path, opts)
+    }
+
+    private fun calculateInSampleSize(w: Int, h: Int, maxSide: Int): Int {
+        if (w <= 0 || h <= 0) return 1
+        var inSample = 1
+        var halfW = w / 2
+        var halfH = h / 2
+        while (halfW / inSample >= maxSide && halfH / inSample >= maxSide) {
+            inSample *= 2
+        }
+        return inSample.coerceAtLeast(1)
+    }
+
+    // -------------------------
+    // EXIF rotation
+    // -------------------------
+
+    private fun rotateIfNeeded(bmp: Bitmap, path: String): Bitmap {
+        val degrees = runCatching {
+            val exif = ExifInterface(path)
+            exifOrientationToDegrees(
+                exif.getAttributeInt(
+                    ExifInterface.TAG_ORIENTATION,
+                    ExifInterface.ORIENTATION_NORMAL
+                )
+            )
+        }.getOrDefault(0)
+
+        return rotateBitmap(bmp, degrees)
+    }
+
+    private fun readRotationDegrees(inputStream: java.io.InputStream): Int {
+        return runCatching {
+            val exif = ExifInterface(inputStream)
+            exifOrientationToDegrees(
+                exif.getAttributeInt(
+                    ExifInterface.TAG_ORIENTATION,
+                    ExifInterface.ORIENTATION_NORMAL
+                )
+            )
+        }.getOrDefault(0)
+    }
+
+    private fun exifOrientationToDegrees(orientation: Int): Int {
+        return when (orientation) {
+            ExifInterface.ORIENTATION_ROTATE_90 -> 90
+            ExifInterface.ORIENTATION_ROTATE_180 -> 180
+            ExifInterface.ORIENTATION_ROTATE_270 -> 270
+            else -> 0
+        }
+    }
+
+    private fun rotateBitmap(src: Bitmap, degrees: Int): Bitmap {
+        if (degrees == 0) return src
+        val m = Matrix().apply { postRotate(degrees.toFloat()) }
+        return Bitmap.createBitmap(src, 0, 0, src.width, src.height, m, true)
+    }
+
+    companion object {
+        // TamaÃ±o mÃ¡ximo al GUARDAR imÃ¡genes en tu storage interno.
+        // SÃºbelo/bÃ¡jalo si quieres mÃ¡s/menos detalle en general.
+        private const val SAVE_MAX_SIDE_PX = 1600
+
+        // CompresiÃ³n JPEG al GUARDAR en storage interno.
+        private const val SAVE_JPEG_QUALITY = 82
+
+        // Default por compatibilidad (no PDF).
+        private const val DEFAULT_LOAD_MAX_SIDE_PX = 900
+    }
+}
+
+
+
+==================== FILE: D:\CatalogoApp\app\src\main\java\com\quirozsolutions\catalogo1boton\infra\pdf\PdfCatalogGenerator.kt ====================
+package com.quirozsolutions.catalogo1boton.infra.pdf
+
+import android.content.Context
+import android.graphics.*
+import android.graphics.pdf.PdfDocument
+import com.quirozsolutions.catalogo1boton.domain.model.CatalogTemplate
+import com.quirozsolutions.catalogo1boton.domain.model.Product
+import com.quirozsolutions.catalogo1boton.domain.model.displayName
+import com.quirozsolutions.catalogo1boton.infra.files.ImageStore
+import com.quirozsolutions.catalogo1boton.infra.pdf.templates.TemplateRegistry
+import java.io.File
+import java.io.FileOutputStream
+import java.text.NumberFormat
+import java.util.Locale
+import kotlin.math.ceil
+import kotlin.math.max
+import kotlin.math.min
+
+class PdfCatalogGenerator(
+    private val context: Context,
+    private val imageStore: ImageStore
+) {
+
+    /**
+     * Mantengo tu mÃ©todo anterior para no romper llamadas existentes.
+     */
+    fun generateMinimalistaCatalog(
+        products: List<Product>,
+        storeLogoPath: String?,
+        sellerWhatsapp: String,
+        sellerInstagram: String,
+        debugDrawSlots: Boolean = false,
+        onProgress: (cur: Int, total: Int) -> Unit = { _, _ -> }
+    ): File {
+        return generateCatalog(
+            products = products,
+            storeLogoPath = storeLogoPath,
+            sellerWhatsapp = sellerWhatsapp,
+            sellerInstagram = sellerInstagram,
+            template = CatalogTemplate.MINIMALISTA,
+            debugDrawSlots = debugDrawSlots,
+            onProgress = onProgress
+        )
+    }
+
+    /**
+     * Genera el PDF.
+     * - Si template == MINIMALISTA y existe assets/templates/tamplate.png -> usa modo PNG (1024x761) tipo â€œpolaroidâ€.
+     * - Si no, usa el modo A4 actual con TemplateRegistry.
+     */
+    fun generateCatalog(
+        products: List<Product>,
+        storeLogoPath: String?,
+        sellerWhatsapp: String,
+        sellerInstagram: String,
+        template: CatalogTemplate,
+        debugDrawSlots: Boolean = false,
+        onProgress: (cur: Int, total: Int) -> Unit = { _, _ -> }
+    ): File {
+
+        // Â¿Existe tu plantilla PNG?
+        val templateBmp = if (template == CatalogTemplate.MINIMALISTA) {
+            loadAssetBitmap("templates/tamplate.png")
+        } else null
+
+        // Si estÃ¡ la PNG y es MINIMALISTA -> volvemos al modo â€œbuenoâ€ (como tu version anterior)
+        val usePngMinimalista = (template == CatalogTemplate.MINIMALISTA && templateBmp != null)
+
+        // TamaÃ±o pÃ¡gina:
+        // - Modo PNG: 1024 x 761 (igual a tu plantilla)
+        // - Modo A4: 595 x 842
+        val pageW = if (usePngMinimalista) 1024 else 595
+        val pageH = if (usePngMinimalista) 761 else 842
+
+        val doc = PdfDocument()
+
+        // ---- Progreso total (pasos fijos + 1 por producto) ----
+        val totalSteps = (products.size.coerceAtLeast(0)) + 3
+        var curStep = 0
+
+        fun bump() {
+            curStep += 1
+            onProgress(curStep.coerceAtMost(totalSteps), totalSteps)
+        }
+
+        onProgress(0, totalSteps)
+        bump()
+
+        // ---- Paints portada ----
+        val paintTitle = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.BLACK
+            textSize = 22f
+            typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+        }
+        val paintSub = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.DKGRAY
+            textSize = 12f
+        }
+
+        // ---- Portada ----
+        run {
+            val portadaBmp = loadAssetBitmap("templates/portada.png")
+
+            val pageInfo = PdfDocument.PageInfo.Builder(pageW, pageH, 1).create()
+            val page = doc.startPage(pageInfo)
+            val c = page.canvas
+
+            c.drawColor(Color.WHITE)
+
+            if (usePngMinimalista && portadaBmp != null) {
+                // Portada diseÃ±ada en PNG
+                c.drawBitmap(portadaBmp, null, Rect(0, 0, pageW, pageH), null)
+            } else {
+                // Portada programÃ¡tica (tu versiÃ³n actual)
+                val margin = 36
+                val centerX = pageW / 2
+
+                val maxLogoW = pageW - margin * 2
+                val maxLogoH = 180
+                val logoDst = Rect(margin, 70, margin + maxLogoW, 70 + maxLogoH)
+
+                val logoBmp = storeLogoPath?.let {
+                    val maxSidePx = pointsToPx(max(logoDst.width(), logoDst.height()), COVER_LOGO_DPI)
+                    imageStore.loadBitmapForPdf(it, maxSidePx)
+                }
+                if (logoBmp != null) {
+                    val dst = fitRect(
+                        srcW = logoBmp.width,
+                        srcH = logoBmp.height,
+                        dstLeft = logoDst.left,
+                        dstTop = logoDst.top,
+                        dstW = logoDst.width(),
+                        dstH = logoDst.height()
+                    )
+                    c.drawBitmap(logoBmp, null, dst, null)
+                    logoBmp.recycle()
+                }
+
+                val title = "CatÃ¡logo"
+                val titleW = paintTitle.measureText(title)
+                c.drawText(title, centerX - (titleW / 2f), 320f, paintTitle)
+
+                var y = 380f
+                if (sellerInstagram.isNotBlank()) {
+                    c.drawText("Instagram: $sellerInstagram", margin.toFloat(), y, paintSub)
+                    y += 22f
+                }
+                if (sellerWhatsapp.isNotBlank()) {
+                    c.drawText("WhatsApp: $sellerWhatsapp", margin.toFloat(), y, paintSub)
+                    y += 22f
+                }
+
+                c.drawText("Generado desde la app", margin.toFloat(), (pageH - 40).toFloat(), paintSub)
+            }
+
+            doc.finishPage(page)
+            portadaBmp?.recycle()
+        }
+
+        bump()
+
+        val priceFmt = NumberFormat.getCurrencyInstance(Locale("es", "CO"))
+
+        var pageNumber = 2
+        var index = 0
+
+        if (usePngMinimalista) {
+            // =========================
+            // MODO PNG (polaroid 6 slots)
+            // =========================
+            val slots = PngSlots.minimalista6()
+
+            val pricePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                color = Color.parseColor("#3E3E3E")
+                textSize = 38f
+                typeface = Typeface.DEFAULT_BOLD
+            }
+
+            val namePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                color = Color.parseColor("#3E3E3E")
+                textSize = 22f
+                typeface = Typeface.DEFAULT_BOLD
+            }
+
+            while (index < products.size) {
+                val pageInfo = PdfDocument.PageInfo.Builder(pageW, pageH, pageNumber).create()
+                val page = doc.startPage(pageInfo)
+                val c = page.canvas
+
+                c.drawColor(Color.WHITE)
+
+                // Fondo plantilla
+                c.drawBitmap(templateBmp!!, null, Rect(0, 0, pageW, pageH), null)
+
+                val maxOnThisPage = min(slots.size, products.size - index)
+
+                for (i in 0 until maxOnThisPage) {
+                    val product = products[index + i]
+                    val slot = slots[i]
+
+                    val priceText = priceFmt.format(product.priceCents / 100.0)
+
+                    // Foto (centerCrop dentro del marco negro)
+                    val bmp = product.imagePath?.takeIf { it.isNotBlank() }?.let { path ->
+                        val maxSidePx = pointsToPx(max(slot.imageRect.width(), slot.imageRect.height()), PRODUCT_IMAGE_DPI)
+                        imageStore.loadBitmapForPdf(path, maxSidePx)
+                    }
+
+                    if (bmp != null) {
+                        drawBitmapCenterCrop(c, bmp, slot.imageRect)
+                        bmp.recycle()
+                    }
+
+                    // Precio centrado
+                    val tw = pricePaint.measureText(priceText)
+                    c.drawText(
+                        priceText,
+                        slot.pricePoint.x - (tw / 2f),
+                        slot.pricePoint.y,
+                        pricePaint
+                    )
+
+                    // ==============================
+                    // NOMBRE: solo si hay descripciÃ³n
+                    // (displayName ya NO devuelve UUID)
+                    // ==============================
+                    val name = product.displayName.trim()
+                    if (name.isNotBlank() && name != "Producto") {
+                        val titleArea = Rect(
+                            slot.imageRect.left,
+                            slot.imageRect.bottom + 10,
+                            slot.imageRect.right,
+                            (slot.pricePoint.y - 10f).toInt()
+                        )
+                        drawWrappedCenteredText(
+                            canvas = c,
+                            text = name,
+                            area = titleArea,
+                            paint = namePaint,
+                            maxLines = 2
+                        )
+                    }
+
+                    bump()
+                }
+
+                doc.finishPage(page)
+                pageNumber += 1
+                index += maxOnThisPage
+            }
+
+            templateBmp?.recycle()
+
+
+        } else {
+            // =========================
+            // MODO A4 (tu versiÃ³n actual)
+            // =========================
+            val tpl = TemplateRegistry.resolve(template)
+
+            val cols = tpl.columns().coerceAtLeast(1)
+            val perPage = tpl.itemsPerPage().coerceAtLeast(1)
+            val rows = ceil(perPage / cols.toDouble()).toInt().coerceAtLeast(1)
+
+            val marginX = 28
+            val marginTop = 36
+            val marginBottom = 28
+            val gap = 14
+
+            val usableW = pageW - marginX * 2 - gap * (cols - 1)
+            val usableH = pageH - marginTop - marginBottom - gap * (rows - 1)
+
+            val cellW = usableW / cols
+            val cellH = usableH / rows
+
+            while (index < products.size) {
+                val pageInfo = PdfDocument.PageInfo.Builder(pageW, pageH, pageNumber).create()
+                val page = doc.startPage(pageInfo)
+                val c = page.canvas
+
+                c.drawColor(Color.WHITE)
+
+                if (debugDrawSlots) {
+                    val p = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                        style = Paint.Style.STROKE
+                        color = Color.LTGRAY
+                        strokeWidth = 1f
+                    }
+                    for (r in 0 until rows) {
+                        for (col in 0 until cols) {
+                            val left = marginX + col * (cellW + gap)
+                            val top = marginTop + r * (cellH + gap)
+                            val rect = Rect(left, top, left + cellW, top + cellH)
+                            c.drawRect(rect, p)
+                        }
+                    }
+                }
+
+                val maxOnThisPage = min(perPage, products.size - index)
+
+                for (i in 0 until maxOnThisPage) {
+                    val product = products[index + i]
+
+                    val row = i / cols
+                    val col = i % cols
+
+                    val left = marginX + col * (cellW + gap)
+                    val top = marginTop + row * (cellH + gap)
+                    val cellRect = Rect(left, top, left + cellW, top + cellH)
+
+                    val priceText = priceFmt.format(product.priceCents / 100.0)
+
+                    val bmp = product.imagePath?.takeIf { it.isNotBlank() }?.let { path ->
+                        val imgRect = tpl.imageRect(cellRect)
+                        val maxSidePx = pointsToPx(max(imgRect.width(), imgRect.height()), PRODUCT_IMAGE_DPI)
+                        imageStore.loadBitmapForPdf(path, maxSidePx)
+                    }
+
+                    tpl.drawItem(
+                        canvas = c,
+                        rect = cellRect,
+                        product = product,
+                        image = bmp,
+                        priceText = priceText
+                    )
+
+                    bmp?.recycle()
+                    bump()
+                }
+
+                doc.finishPage(page)
+                pageNumber += 1
+                index += maxOnThisPage
+            }
+        }
+
+        // ---- Guardar PDF ----
+        val outFile = File(context.cacheDir, "catalogo_${System.currentTimeMillis()}.pdf")
+        FileOutputStream(outFile).use { fos -> doc.writeTo(fos) }
+        doc.close()
+
+        bump()
+        return outFile
+    }
+
+    // =========================
+    // Helpers
+    // =========================
+
+    private fun loadAssetBitmap(assetPath: String): Bitmap? {
+        return try {
+            context.assets.open(assetPath).use { input ->
+                BitmapFactory.decodeStream(input)
+            }
+        } catch (_: Exception) {
+            null
+        }
+    }
+
+    /**
+     * CenterCrop sin deformar dentro de dst.
+     */
+    private fun drawBitmapCenterCrop(canvas: Canvas, bmp: Bitmap, dst: Rect) {
+        val srcW = bmp.width.toFloat()
+        val srcH = bmp.height.toFloat()
+        val dstW = dst.width().toFloat()
+        val dstH = dst.height().toFloat()
+
+        val scale = max(dstW / srcW, dstH / srcH)
+        val scaledW = srcW * scale
+        val scaledH = srcH * scale
+
+        val left = dst.left + (dstW - scaledW) / 2f
+        val top = dst.top + (dstH - scaledH) / 2f
+
+        val m = Matrix().apply {
+            postScale(scale, scale)
+            postTranslate(left, top)
+        }
+
+        canvas.save()
+        canvas.clipRect(dst)
+        canvas.drawBitmap(bmp, m, null)
+        canvas.restore()
+    }
+
+    private fun drawWrappedCenteredText(
+        canvas: Canvas,
+        text: String,
+        area: Rect,
+        paint: Paint,
+        maxLines: Int
+    ) {
+        if (area.width() <= 0 || area.height() <= 0) return
+        val clean = text.trim()
+        if (clean.isEmpty()) return
+
+        val words = clean.split(Regex("\\s+"))
+        val lines = ArrayList<String>(maxLines)
+
+        var i = 0
+        while (i < words.size && lines.size < maxLines) {
+            var line = words[i]
+            i++
+
+            while (i < words.size) {
+                val candidate = "$line ${words[i]}"
+                if (paint.measureText(candidate) <= area.width()) {
+                    line = candidate
+                    i++
+                } else break
+            }
+            lines.add(line)
+        }
+
+        // Si sobrÃ³ texto, elipsiza Ãºltima lÃ­nea
+        val hasMore = i < words.size
+        if (hasMore && lines.isNotEmpty()) {
+            lines[lines.lastIndex] = ellipsizeToWidth(lines.last(), area.width().toFloat(), paint)
+        }
+
+        val lineH = paint.fontSpacing
+        var y = area.top - paint.ascent() // baseline
+
+        for (line in lines) {
+            if (y > area.bottom) break
+            val w = paint.measureText(line)
+            val x = area.exactCenterX() - (w / 2f)
+            canvas.drawText(line, x, y, paint)
+            y += lineH
+        }
+    }
+
+    private fun ellipsizeToWidth(text: String, maxW: Float, paint: Paint): String {
+        val ell = "â€¦"
+        if (paint.measureText(text) <= maxW) return text
+        if (paint.measureText(ell) > maxW) return ""
+
+        var end = text.length
+        while (end > 0) {
+            val candidate = text.substring(0, end).trimEnd() + ell
+            if (paint.measureText(candidate) <= maxW) return candidate
+            end--
+        }
+        return ell
+    }
+
+    /**
+     * Convierte puntos (72dpi) a pÃ­xeles objetivo (DPI elegido).
+     */
+    private fun pointsToPx(points: Int, dpi: Int): Int {
+        return ((points.toFloat() * dpi.toFloat()) / 72f).toInt().coerceAtLeast(1)
+    }
+
+    /**
+     * Calcula un rect destino manteniendo aspect ratio (contain).
+     */
+    private fun fitRect(
+        srcW: Int,
+        srcH: Int,
+        dstLeft: Int,
+        dstTop: Int,
+        dstW: Int,
+        dstH: Int
+    ): Rect {
+        if (srcW <= 0 || srcH <= 0) return Rect(dstLeft, dstTop, dstLeft + dstW, dstTop + dstH)
+
+        val srcRatio = srcW.toFloat() / srcH.toFloat()
+        val dstRatio = dstW.toFloat() / dstH.toFloat()
+
+        val w: Int
+        val h: Int
+
+        if (srcRatio > dstRatio) {
+            w = dstW
+            h = (dstW / srcRatio).toInt()
+        } else {
+            h = dstH
+            w = (dstH * srcRatio).toInt()
+        }
+
+        val left = dstLeft + (dstW - w) / 2
+        val top = dstTop + (dstH - h) / 2
+        return Rect(left, top, left + w, top + h)
+    }
+
+    companion object {
+        private const val PRODUCT_IMAGE_DPI = 160
+        private const val COVER_LOGO_DPI = 200
+    }
+}
+
+
+
+==================== FILE: D:\CatalogoApp\app\src\main\java\com\quirozsolutions\catalogo1boton\infra\pdf\PngSlots.kt ====================
+package com.quirozsolutions.catalogo1boton.infra.pdf
+
+import android.graphics.PointF
+import android.graphics.Rect
+
+data class PngSlot(
+    val imageRect: Rect,
+    val pricePoint: PointF
+)
+
+object PngSlots {
+
+    /**
+     * Slots para: templates/tamplate_minimalista_minimalista.png (1024x761)
+     * - 3 columnas x 2 filas
+     * - imageRect = marco negro
+     * - pricePoint = centrado abajo del marco (dentro del recuadro)
+     */
+    fun minimalista6(): List<PngSlot> {
+        // Marcos de imagen detectados (aprox) en tu PNG:
+        // (x,y,w,h): (76,34,243,254), (391,34,242,254), (706,34,242,254)
+        //           (78,404,243,254), (391,404,242,254), (705,404,242,254)
+
+        // Rects â€œouterâ€ (marco total de cada tarjeta) para ubicar el precio (aprox)
+        // (x,y,w,h): (63,15,274,349), (374,15,275,349), (688,15,275,349)
+        //           (63,384,274,349), (374,384,275,349), (688,384,275,349)
+
+        val padInsideFrame = 6 // para no tapar el borde negro del marco
+
+        fun slot(
+            cardLeft: Int, cardTop: Int, cardW: Int, cardH: Int,
+            frameLeft: Int, frameTop: Int, frameW: Int, frameH: Int
+        ): PngSlot {
+            val image = Rect(
+                frameLeft + padInsideFrame,
+                frameTop + padInsideFrame,
+                frameLeft + frameW - padInsideFrame,
+                frameTop + frameH - padInsideFrame
+            )
+            val cardCenterX = (cardLeft + cardW / 2f)
+            val priceBaselineY = (cardTop + cardH - 24f) // baseline dentro de la tarjeta
+            return PngSlot(imageRect = image, pricePoint = PointF(cardCenterX, priceBaselineY))
+        }
+
+        return listOf(
+            slot(63, 15, 274, 349, 76, 34, 243, 254),
+            slot(374, 15, 275, 349, 391, 34, 242, 254),
+            slot(688, 15, 275, 349, 706, 34, 242, 254),
+            slot(63, 384, 274, 349, 78, 404, 243, 254),
+            slot(374, 384, 275, 349, 391, 404, 242, 254),
+            slot(688, 384, 275, 349, 705, 404, 242, 254),
+        )
+    }
+}
+
+
+
+==================== FILE: D:\CatalogoApp\app\src\main\java\com\quirozsolutions\catalogo1boton\infra\pdf\ShareUtils.kt ====================
+package com.quirozsolutions.catalogo1boton.infra.pdf
+
+
+import android.content.Context
+import android.content.Intent
+import androidx.core.content.FileProvider
+import java.io.File
+
+fun sharePdf(context: Context, pdfFile: File) {
+    val uri = FileProvider.getUriForFile(
+        context,
+        "${context.packageName}.fileprovider",
+        pdfFile
+    )
+
+    val intent = Intent(Intent.ACTION_SEND).apply {
+        type = "application/pdf"
+        putExtra(Intent.EXTRA_STREAM, uri)
+        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+    }
+    context.startActivity(Intent.createChooser(intent, "Compartir catÃ¡logo"))
+}
+
+
+
+==================== FILE: D:\CatalogoApp\app\src\main\java\com\quirozsolutions\catalogo1boton\infra\pdf\templates\CompactaTemplate.kt ====================
+package com.quirozsolutions.catalogo1boton.infra.pdf.templates
+
+import android.graphics.*
+import com.quirozsolutions.catalogo1boton.domain.model.Product
+import com.quirozsolutions.catalogo1boton.domain.model.displayName
+
+class CompactaTemplate : PdfTemplate {
+
+    override fun columns() = 3
+    override fun itemsPerPage() = 9
+
+    override fun imageRect(itemRect: Rect): Rect {
+        val (_, imgRect) = layout(itemRect)
+        return imgRect
+    }
+
+    override fun drawItem(
+        canvas: Canvas,
+        rect: Rect,
+        product: Product,
+        image: Bitmap?,
+        priceText: String
+    ) {
+        val (r, imgRect) = layout(rect)
+
+        val border = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            style = Paint.Style.STROKE
+            strokeWidth = 1.5f
+            color = Color.parseColor("#CCCCCC")
+        }
+        canvas.drawRect(r, border)
+
+        image?.let { canvas.drawBitmap(it, null, imgRect, null) }
+
+        val namePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.parseColor("#111111")
+            textSize = 12f
+            typeface = Typeface.DEFAULT_BOLD
+        }
+        val pricePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.parseColor("#111111")
+            textSize = 12f
+        }
+
+        val name = product.displayName.take(18)
+        canvas.drawText(name, (r.left + 8).toFloat(), (imgRect.bottom + 18).toFloat(), namePaint)
+        canvas.drawText(priceText, (r.left + 8).toFloat(), (r.bottom - 10).toFloat(), pricePaint)
+    }
+
+    private fun layout(rect: Rect): Pair<Rect, Rect> {
+        val pad = 10
+        val r = Rect(rect.left + pad, rect.top + pad, rect.right - pad, rect.bottom - pad)
+
+        val imgBottom = r.top + (r.height() * 0.62f).toInt()
+        val imgRect = Rect(r.left + 8, r.top + 8, r.right - 8, imgBottom)
+
+        return r to imgRect
+    }
+}
+
+
+
+==================== FILE: D:\CatalogoApp\app\src\main\java\com\quirozsolutions\catalogo1boton\infra\pdf\templates\EleganteTemplate.kt ====================
+package com.quirozsolutions.catalogo1boton.infra.pdf.templates
+
+import android.graphics.*
+import android.graphics.Typeface
+import com.quirozsolutions.catalogo1boton.domain.model.Product
+import com.quirozsolutions.catalogo1boton.domain.model.displayName
+
+class EleganteTemplate : PdfTemplate {
+
+    override fun columns() = 2
+    override fun itemsPerPage() = 6
+
+    override fun imageRect(itemRect: Rect): Rect {
+        val (_, imgRect) = layout(itemRect)
+        return imgRect
+    }
+
+    override fun drawItem(
+        canvas: Canvas,
+        rect: Rect,
+        product: Product,
+        image: Bitmap?,
+        priceText: String
+    ) {
+        val (r, imgRect) = layout(rect)
+
+        val bg = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.parseColor("#FAFAFA") }
+        val border = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            style = Paint.Style.STROKE
+            strokeWidth = 2f
+            color = Color.parseColor("#BBBBBB")
+        }
+        canvas.drawRect(r, bg)
+        canvas.drawRect(r, border)
+
+        val headerH = 48
+        val headerRect = Rect(r.left, r.top, r.right, r.top + headerH)
+        val headerPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.parseColor("#111111") }
+        canvas.drawRect(headerRect, headerPaint)
+
+        val titlePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.WHITE
+            textSize = 18f
+            typeface = Typeface.DEFAULT_BOLD
+        }
+        canvas.drawText(
+            product.displayName.take(24),
+            (r.left + 14).toFloat(),
+            (r.top + 32).toFloat(),
+            titlePaint
+        )
+
+        image?.let { canvas.drawBitmap(it, null, imgRect, null) }
+
+        val bodyPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.parseColor("#222222")
+            textSize = 14f
+        }
+        val pricePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.parseColor("#111111")
+            textSize = 20f
+            typeface = Typeface.DEFAULT_BOLD
+        }
+
+        val textLeft = imgRect.right + 12
+        canvas.drawText(
+            (product.description ?: "").take(110),
+            textLeft.toFloat(),
+            (imgRect.top + 18).toFloat(),
+            bodyPaint
+        )
+        canvas.drawText(
+            priceText,
+            textLeft.toFloat(),
+            (r.bottom - 18).toFloat(),
+            pricePaint
+        )
+    }
+
+    private fun layout(rect: Rect): Pair<Rect, Rect> {
+        val pad = 14
+        val r = Rect(rect.left + pad, rect.top + pad, rect.right - pad, rect.bottom - pad)
+
+        val headerH = 48
+        val imgRect = Rect(
+            r.left + 14,
+            r.top + headerH + 14,
+            r.left + 190,                // ancho fijo estilo â€œfichaâ€
+            r.top + headerH + 190
+        )
+
+        return r to imgRect
+    }
+}
+
+
+
+==================== FILE: D:\CatalogoApp\app\src\main\java\com\quirozsolutions\catalogo1boton\infra\pdf\templates\MinimalistaTemplate.kt ====================
+package com.quirozsolutions.catalogo1boton.infra.pdf.templates
+
+import android.graphics.*
+import com.quirozsolutions.catalogo1boton.domain.model.Product
+import com.quirozsolutions.catalogo1boton.domain.model.displayName
+
+class MinimalistaTemplate : PdfTemplate {
+
+    override fun columns() = 2
+    override fun itemsPerPage() = 6
+
+    override fun imageRect(itemRect: Rect): Rect {
+        val (_, imgRect) = layout(itemRect)
+        return imgRect
+    }
+
+    override fun drawItem(
+        canvas: Canvas,
+        rect: Rect,
+        product: Product,
+        image: Bitmap?,
+        priceText: String
+    ) {
+        val (r, imgRect) = layout(rect)
+
+        val border = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            style = Paint.Style.STROKE
+            strokeWidth = 2f
+            color = Color.parseColor("#DDDDDD")
+        }
+        canvas.drawRect(r, border)
+
+        val titlePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.parseColor("#111111")
+            textSize = 16f
+            typeface = Typeface.DEFAULT_BOLD
+        }
+        val descPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.parseColor("#333333")
+            textSize = 12f
+        }
+        val pricePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.parseColor("#111111")
+            textSize = 14f
+            typeface = Typeface.DEFAULT_BOLD
+        }
+
+        image?.let { canvas.drawBitmap(it, null, imgRect, null) }
+
+        val name = product.displayName.take(28)
+        val desc = (product.description ?: "").take(110)
+
+        val y = imgRect.bottom + 20f
+        canvas.drawText(priceText, (r.left + 10).toFloat(), y, pricePaint)
+        canvas.drawText(name, (r.left + 10).toFloat(), y + 18f, titlePaint)
+        canvas.drawText(desc, (r.left + 10).toFloat(), y + 36f, descPaint)
+    }
+
+    private fun layout(rect: Rect): Pair<Rect, Rect> {
+        val pad = 14
+        val r = Rect(rect.left + pad, rect.top + pad, rect.right - pad, rect.bottom - pad)
+
+        val imgBottom = r.top + (r.height() * 0.60f).toInt()
+        val imgRect = Rect(r.left + 10, r.top + 10, r.right - 10, imgBottom)
+
+        return r to imgRect
+    }
+}
+
+
+
+==================== FILE: D:\CatalogoApp\app\src\main\java\com\quirozsolutions\catalogo1boton\infra\pdf\templates\PdfTemplate.kt ====================
+package com.quirozsolutions.catalogo1boton.infra.pdf.templates
+
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Rect
+import com.quirozsolutions.catalogo1boton.domain.model.Product
+
+interface PdfTemplate {
+
+    fun columns(): Int
+
+    fun itemsPerPage(): Int
+
+    /**
+     * Rect exacto donde la plantilla dibuja la imagen (en coordenadas del PDF page/canvas).
+     * Esto permite cargar la imagen con el tamaÃ±o JUSTO y que el PDF quede liviano.
+     */
+    fun imageRect(itemRect: Rect): Rect
+
+    fun drawItem(
+        canvas: Canvas,
+        rect: Rect,
+        product: Product,
+        image: Bitmap?,
+        priceText: String
+    )
+}
+
+
+
+==================== FILE: D:\CatalogoApp\app\src\main\java\com\quirozsolutions\catalogo1boton\infra\pdf\templates\PromocionalTemplate.kt ====================
+package com.quirozsolutions.catalogo1boton.infra.pdf.templates
+
+import android.graphics.*
+import com.quirozsolutions.catalogo1boton.domain.model.Product
+import com.quirozsolutions.catalogo1boton.domain.model.displayName
+
+class PromocionalTemplate : PdfTemplate {
+
+    override fun columns() = 1
+    override fun itemsPerPage() = 4
+
+    override fun imageRect(itemRect: Rect): Rect {
+        val (_, imgRect) = layout(itemRect)
+        return imgRect
+    }
+
+    override fun drawItem(
+        canvas: Canvas,
+        rect: Rect,
+        product: Product,
+        image: Bitmap?,
+        priceText: String
+    ) {
+        val (r, imgRect) = layout(rect)
+
+        val bg = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.parseColor("#FFF3E0")
+        }
+        canvas.drawRect(r, bg)
+
+        image?.let { canvas.drawBitmap(it, null, imgRect, null) }
+
+        val namePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.parseColor("#BF360C")
+            textSize = 22f
+            typeface = Typeface.DEFAULT_BOLD
+        }
+        canvas.drawText(
+            product.displayName.take(40),
+            (r.left + 12).toFloat(),
+            (imgRect.bottom + 32).toFloat(),
+            namePaint
+        )
+
+        val pricePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.parseColor("#D32F2F")
+            textSize = 34f
+            typeface = Typeface.DEFAULT_BOLD
+        }
+        canvas.drawText(
+            priceText,
+            (r.left + 12).toFloat(),
+            (r.bottom - 24).toFloat(),
+            pricePaint
+        )
+    }
+
+    private fun layout(rect: Rect): Pair<Rect, Rect> {
+        val pad = 18
+        val r = Rect(rect.left + pad, rect.top + pad, rect.right - pad, rect.bottom - pad)
+
+        val imgH = (r.height() * 0.55f).toInt()
+        val imgRect = Rect(r.left + 10, r.top + 10, r.right - 10, r.top + imgH)
+
+        return r to imgRect
+    }
+}
+
+
+
+==================== FILE: D:\CatalogoApp\app\src\main\java\com\quirozsolutions\catalogo1boton\infra\pdf\templates\TemplateRegistry.kt ====================
+package com.quirozsolutions.catalogo1boton.infra.pdf.templates
+
+import com.quirozsolutions.catalogo1boton.domain.model.CatalogTemplate
+
+object TemplateRegistry {
+
+    fun resolve(template: CatalogTemplate): PdfTemplate {
+        return when (template) {
+            CatalogTemplate.MINIMALISTA -> MinimalistaTemplate()
+            CatalogTemplate.PROMOCIONAL -> PromocionalTemplate()
+            CatalogTemplate.COMPACTA -> CompactaTemplate()
+            CatalogTemplate.ELEGANTE -> EleganteTemplate()
+        }
+    }
+}
+
+
+
+==================== FILE: D:\CatalogoApp\app\src\main\java\com\quirozsolutions\catalogo1boton\infra\work\SyncWorker.kt ====================
+package com.quirozsolutions.catalogo1boton.infra.work
+
+import android.content.Context
+import androidx.work.CoroutineWorker
+import androidx.work.WorkerParameters
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.quirozsolutions.catalogo1boton.App
+
+class SyncWorker(
+    appContext: Context,
+    params: WorkerParameters
+) : CoroutineWorker(appContext, params) {
+
+    override suspend fun doWork(): Result {
+        val app = applicationContext as App
+
+        val clientName = inputData.getString(KEY_CLIENT).orEmpty()
+        val sharedFolderId = inputData.getString(KEY_SHARED_FOLDER_ID)?.takeIf { it.isNotBlank() }
+
+        if (clientName.isBlank()) return Result.failure()
+
+        val account = GoogleSignIn.getLastSignedInAccount(applicationContext)
+            ?: return Result.retry()
+
+        return try {
+            val zip = app.container.backupManager.buildLatestBackup(clientName)
+
+            app.container.driveSyncManager.uploadLatestBackup(
+                account = account,
+                backupZip = zip,
+                clientName = clientName,
+                sharedFolderId = sharedFolderId
+            )
+
+            Result.success()
+        } catch (_: Exception) {
+            Result.retry()
+        }
+    }
+
+    companion object {
+        const val UNIQUE_NAME = "catalogo_latest_sync"
+        const val KEY_CLIENT = "client"
+        const val KEY_SHARED_FOLDER_ID = "sharedFolderId"
+    }
+}
+
+
+
+==================== FILE: D:\CatalogoApp\app\src\main\java\com\quirozsolutions\catalogo1boton\infra\work\WorkScheduler.kt ====================
+package com.quirozsolutions.catalogo1boton.infra.work
+
+import android.content.Context
+import androidx.work.*
+import java.util.concurrent.TimeUnit
+
+class WorkScheduler(private val context: Context) {
+
+    fun scheduleDebouncedSync(clientName: String, sharedFolderId: String?) {
+        val data = workDataOf(
+            SyncWorker.KEY_CLIENT to clientName,
+            SyncWorker.KEY_SHARED_FOLDER_ID to (sharedFolderId ?: "")
+        )
+
+        val req = OneTimeWorkRequestBuilder<SyncWorker>()
+            .setInputData(data)
+            .setConstraints(
+                Constraints.Builder()
+                    .setRequiredNetworkType(NetworkType.CONNECTED)
+                    .build()
+            )
+            .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 30, TimeUnit.SECONDS)
+            .setInitialDelay(45, TimeUnit.SECONDS)
+            .build()
+
+        WorkManager.getInstance(context).enqueueUniqueWork(
+            SyncWorker.UNIQUE_NAME,
+            ExistingWorkPolicy.REPLACE,
+            req
+        )
+    }
+
+    // âœ… NUEVO: sincroniza YA (sin delay)
+    fun scheduleImmediateSync(clientName: String, sharedFolderId: String?) {
+        val data = workDataOf(
+            SyncWorker.KEY_CLIENT to clientName,
+            SyncWorker.KEY_SHARED_FOLDER_ID to (sharedFolderId ?: "")
+        )
+
+        val req = OneTimeWorkRequestBuilder<SyncWorker>()
+            .setInputData(data)
+            .setConstraints(
+                Constraints.Builder()
+                    .setRequiredNetworkType(NetworkType.CONNECTED)
+                    .build()
+            )
+            .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 30, TimeUnit.SECONDS)
+            .build()
+
+        WorkManager.getInstance(context).enqueueUniqueWork(
+            SyncWorker.UNIQUE_NAME,
+            ExistingWorkPolicy.REPLACE,
+            req
+        )
+    }
+}
+
+
+
+==================== FILE: D:\CatalogoApp\app\src\main\java\com\quirozsolutions\catalogo1boton\MainActivity.kt ====================
+package com.quirozsolutions.catalogo1boton
+
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import com.quirozsolutions.catalogo1boton.ui.nav.AppNav
+import com.quirozsolutions.catalogo1boton.ui.theme.Catalogo1botonTheme
+
+class MainActivity : ComponentActivity() {
+
+    private lateinit var container: AppContainer
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        container = AppContainer(applicationContext)
+
+        setContent {
+            Catalogo1botonTheme {
+                AppNav(container = container)
+            }
+        }
+    }
+}
+
+
+
+==================== FILE: D:\CatalogoApp\app\src\main\java\com\quirozsolutions\catalogo1boton\ui\nav\AppNav.kt ====================
+package com.quirozsolutions.catalogo1boton.ui.nav
+
+import androidx.compose.runtime.Composable
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.quirozsolutions.catalogo1boton.AppContainer
+import com.quirozsolutions.catalogo1boton.ui.screens.GenerateCatalogScreen
+import com.quirozsolutions.catalogo1boton.ui.screens.ProductFormScreen
+import com.quirozsolutions.catalogo1boton.ui.screens.ProductListScreen
+import com.quirozsolutions.catalogo1boton.ui.screens.RestoreScreen
+import com.quirozsolutions.catalogo1boton.ui.screens.SettingsScreen
+
+@Composable
+fun AppNav(container: AppContainer) {
+    val nav = rememberNavController()
+
+    NavHost(navController = nav, startDestination = Routes.PRODUCTS) {
+
+        composable(Routes.PRODUCTS) {
+            ProductListScreen(
+                container = container,
+                onAdd = { nav.navigate(Routes.productForm(null)) },
+                onEdit = { productId -> nav.navigate(Routes.productForm(productId)) },
+                onGenerate = { nav.navigate(Routes.GENERATE) },
+                onSettings = { nav.navigate(Routes.SETTINGS) },
+                onRestore = { nav.navigate(Routes.RESTORE) }
+            )
+        }
+
+        composable(
+            route = Routes.PRODUCT_FORM_ROUTE,
+            arguments = listOf(
+                navArgument("productId") {
+                    type = NavType.StringType
+                    defaultValue = ""
+                }
+            )
+        ) { backStack ->
+            val pid = backStack.arguments
+                ?.getString("productId")
+                ?.takeIf { it.isNotBlank() && it != "{productId}" }
+
+            ProductFormScreen(
+                container = container,
+                productId = pid,
+                onBack = { nav.popBackStack() }
+            )
+        }
+
+        composable(Routes.GENERATE) {
+            GenerateCatalogScreen(container = container, onBack = { nav.popBackStack() })
+        }
+
+        composable(Routes.SETTINGS) {
+            SettingsScreen(
+                container = container,
+                onBack = { nav.popBackStack() },
+                syncNow = { clientName, sharedFolderId ->
+                    val zip = container.backupManager.buildLatestBackup(clientName)
+                    val account = container.authManager.lastSignedInAccount()
+                        ?: throw IllegalStateException("No hay sesiÃ³n iniciada")
+
+                    container.driveSyncManager.uploadLatestBackup(
+                        account = account,
+                        backupZip = zip,
+                        clientName = clientName,
+                        sharedFolderId = sharedFolderId
+                    )
+                }
+            )
+        }
+
+        composable(Routes.RESTORE) {
+            RestoreScreen(container = container, onBack = { nav.popBackStack() })
+        }
+    }
+}
+
+
+
+==================== FILE: D:\CatalogoApp\app\src\main\java\com\quirozsolutions\catalogo1boton\ui\nav\Routes.kt ====================
+package com.quirozsolutions.catalogo1boton.ui.nav
+
+object Routes {
+    const val PRODUCTS = "products"
+
+    // Ruta base para abrir formulario nuevo
+    const val PRODUCT_FORM = "product_form"
+    // Ruta patrÃ³n para NavHost (con argumento)
+    const val PRODUCT_FORM_ROUTE = "product_form?productId={productId}"
+
+    const val GENERATE = "generate"
+    const val SETTINGS = "settings"
+    const val RESTORE = "restore"
+
+    fun productForm(productId: String? = null): String =
+        if (productId.isNullOrBlank()) PRODUCT_FORM
+        else "product_form?productId=$productId"
+}
+
+
+
+==================== FILE: D:\CatalogoApp\app\src\main\java\com\quirozsolutions\catalogo1boton\ui\screens\GenerateCatalogScreen.kt ====================
+package com.quirozsolutions.catalogo1boton.ui.screens
+
+import android.os.Handler
+import android.os.Looper
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Switch
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import com.quirozsolutions.catalogo1boton.AppContainer
+import com.quirozsolutions.catalogo1boton.infra.pdf.sharePdf
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.launch
+import androidx.compose.ui.unit.dp
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun GenerateCatalogScreen(
+    container: AppContainer,
+    onBack: () -> Unit
+) {
+    val ctx = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val handler = remember { Handler(Looper.getMainLooper()) }
+
+    var debugSlots by remember { mutableStateOf(false) }
+    var isGenerating by remember { mutableStateOf(false) }
+
+    var progress by remember { mutableFloatStateOf(0f) }
+    var currentStep by remember { mutableIntStateOf(0) }
+    var totalSteps by remember { mutableIntStateOf(1) }
+
+    fun updateProgress(cur: Int, total: Int) {
+        currentStep = cur.coerceAtLeast(0)
+        totalSteps = total.coerceAtLeast(1)
+        progress = (currentStep.toFloat() / totalSteps.toFloat()).coerceIn(0f, 1f)
+    }
+
+    if (isGenerating) {
+        AlertDialog(
+            onDismissRequest = { /* bloqueado mientras genera */ },
+            confirmButton = {},
+            title = { Text("Generando PDFâ€¦") },
+            text = {
+                Column {
+                    // âœ… overload moderno (no deprecated)
+                    LinearProgressIndicator(
+                        progress = { progress.coerceIn(0f, 1f) },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Spacer(Modifier.height(12.dp))
+                    val pct = (progress * 100f).toInt().coerceIn(0, 100)
+                    Text("$pct%  ($currentStep/$totalSteps)")
+                    Spacer(Modifier.height(6.dp))
+                    Text("Por favor espera, esto puede tardar unos segundos.")
+                }
+            }
+        )
+    }
+
+    Scaffold(
+        topBar = { TopAppBar(title = { Text("Generar catÃ¡logo") }) },
+        snackbarHost = { SnackbarHost(snackbarHostState) }
+    ) { padding ->
+        Column(
+            Modifier
+                .padding(padding)
+                .padding(16.dp)
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Dibujar slots (debug)")
+                Switch(checked = debugSlots, onCheckedChange = { debugSlots = it })
+            }
+
+            Spacer(Modifier.height(12.dp))
+
+            Button(
+                enabled = !isGenerating,
+                onClick = {
+                    scope.launch {
+                        isGenerating = true
+                        updateProgress(0, 1)
+
+                        try {
+                            // Traer datos
+                            val products = withContext(Dispatchers.IO) {
+                                container.productRepository.getAllOnce()
+                            }
+
+                            val logoPath = withContext(Dispatchers.IO) {
+                                container.appState.storeLogoPathValue().ifBlank { null }
+                            }
+                            val ws = withContext(Dispatchers.IO) { container.appState.sellerWhatsappValue() }
+                            val ig = withContext(Dispatchers.IO) { container.appState.sellerInstagramValue() }
+
+                            // Generar PDF (con progreso real por producto)
+                            val pdf = withContext(Dispatchers.Default) {
+                                container.pdfGenerator.generateMinimalistaCatalog(
+                                    products = products,
+                                    storeLogoPath = logoPath,
+                                    sellerWhatsapp = ws,
+                                    sellerInstagram = ig,
+                                    debugDrawSlots = debugSlots,
+                                    onProgress = { cur, total ->
+                                        // El generador corre en background: actualizar UI en Main thread
+                                        handler.post { updateProgress(cur, total) }
+                                    }
+                                )
+                            }
+
+                            isGenerating = false
+                            sharePdf(ctx, pdf)
+
+                            // âœ… Cada PDF nuevo -> subir backup inmediatamente
+                            container.appState.scheduleSyncNowOrDebounced(debounced = false)
+
+                        } catch (e: Exception) {
+                            isGenerating = false
+                            snackbarHostState.showSnackbar(
+                                message = "Error generando PDF: ${e.message ?: "desconocido"}"
+                            )
+                        }
+                    }
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Generar PDF (Minimalista + Portada)")
+            }
+
+            Spacer(Modifier.height(8.dp))
+
+            TextButton(onClick = onBack) {
+                Text("Volver")
+            }
+        }
+    }
+}
+
+
+
+==================== FILE: D:\CatalogoApp\app\src\main\java\com\quirozsolutions\catalogo1boton\ui\screens\ProductFormScreen.kt ====================
+@file:OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
+
+package com.quirozsolutions.catalogo1boton.ui.screens
+
+
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts.*
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
+import androidx.core.content.FileProvider
+import com.quirozsolutions.catalogo1boton.AppContainer
+import com.quirozsolutions.catalogo1boton.domain.model.Product
+import kotlinx.coroutines.launch
+import java.io.File
+import java.util.UUID
+
+@Composable
+fun ProductFormScreen(
+    container: AppContainer,
+    productId: String?,
+    onBack: () -> Unit
+) {
+    val ctx = LocalContext.current
+    val scope = rememberCoroutineScope()
+
+    var priceText by remember { mutableStateOf("") }
+    var desc by remember { mutableStateOf("") }
+    var imagePath by remember { mutableStateOf<String?>(null) }
+
+    LaunchedEffect(productId) {
+        if (productId != null) {
+            val p = container.productRepository.getById(productId) ?: return@LaunchedEffect
+            priceText = (p.priceCents / 100.0).toString()
+            desc = p.description.orEmpty()
+            imagePath = p.imagePath
+        }
+    }
+
+    var tempCameraFile by remember { mutableStateOf<File?>(null) }
+    val takePicture = rememberLauncherForActivityResult(TakePicture()) { ok ->
+        if (ok) {
+            val f = tempCameraFile ?: return@rememberLauncherForActivityResult
+            imagePath = container.imageStore.saveFromFile(f)
+            runCatching { f.delete() }
+        }
+    }
+
+    val pickImage = rememberLauncherForActivityResult(GetContent()) { uri: Uri? ->
+        if (uri != null) imagePath = container.imageStore.saveFromUri(uri)
+    }
+
+    Scaffold(
+        topBar = { TopAppBar(title = { Text(if (productId == null) "Nuevo producto" else "Editar producto") }) }
+    ) { padding ->
+        Column(Modifier.padding(padding).padding(16.dp)) {
+            OutlinedTextField(
+                value = priceText,
+                onValueChange = { priceText = it },
+                label = { Text("Precio (obligatorio)") },
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(Modifier.height(12.dp))
+            OutlinedTextField(
+                value = desc,
+                onValueChange = { desc = it },
+                label = { Text("DescripciÃ³n (opcional)") },
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(Modifier.height(12.dp))
+
+            Row {
+                Button(onClick = {
+                    val f = container.imageStore.newTempCameraFile()
+                    tempCameraFile = f
+                    val uri = FileProvider.getUriForFile(ctx, "${ctx.packageName}.fileprovider", f)
+                    takePicture.launch(uri)
+                }) { Text("CÃ¡mara") }
+
+                Spacer(Modifier.width(12.dp))
+
+                Button(onClick = { pickImage.launch("image/*") }) { Text("GalerÃ­a") }
+            }
+
+            Spacer(Modifier.height(20.dp))
+
+            Button(
+                onClick = {
+                    val img = imagePath
+                    if (img.isNullOrBlank()) return@Button
+
+                    val price = priceText.replace(",", ".").toDoubleOrNull()
+                    if (price == null || price < 0) return@Button
+
+                    scope.launch {
+                        val now = System.currentTimeMillis()
+                        val id = productId ?: UUID.randomUUID().toString()
+                        val product = Product(
+                            id = id,
+                            priceCents = (price * 100).toLong(),
+                            description = desc.takeIf { it.isNotBlank() },
+                            imagePath = img,
+                            createdAt = if (productId == null) now else (container.productRepository.getById(id)?.createdAt ?: now),
+                            updatedAt = now
+                        )
+                        container.productRepository.upsert(product)
+
+                        // Debounced sync (anti-saturaciÃ³n) :contentReference[oaicite:14]{index=14}
+                        container.workScheduler.scheduleDebouncedSync(clientName = "cliente", sharedFolderId = null)
+                        onBack()
+                    }
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) { Text("Guardar") }
+
+            Spacer(Modifier.height(8.dp))
+            TextButton(onClick = onBack, modifier = Modifier.fillMaxWidth()) { Text("Volver") }
+        }
+    }
+}
+
+
+
+==================== FILE: D:\CatalogoApp\app\src\main\java\com\quirozsolutions\catalogo1boton\ui\screens\ProductListScreen.kt ====================
+@file:OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
+
+package com.quirozsolutions.catalogo1boton.ui.screens
+
+
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
+import com.quirozsolutions.catalogo1boton.AppContainer
+import com.quirozsolutions.catalogo1boton.domain.model.Product
+import kotlinx.coroutines.launch
+import java.text.NumberFormat
+import java.util.Locale
+
+@Composable
+fun ProductListScreen(
+    container: AppContainer,
+    onAdd: () -> Unit,
+    onEdit: (String) -> Unit,
+    onGenerate: () -> Unit,
+    onSettings: () -> Unit,
+    onRestore: () -> Unit
+) {
+    val scope = rememberCoroutineScope()
+    val products by container.productRepository.observeAll().collectAsState(initial = emptyList())
+    val money = remember { NumberFormat.getCurrencyInstance(Locale("es", "CO")) }
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Productos") },
+                actions = {
+                    TextButton(onClick = onRestore) { Text("Restaurar") }
+                    TextButton(onClick = onSettings) { Text("Ajustes") }
+                }
+            )
+        },
+        floatingActionButton = {
+            Column {
+                FloatingActionButton(onClick = onGenerate) { Text("PDF") }
+                Spacer(Modifier.height(12.dp))
+                FloatingActionButton(onClick = onAdd) { Text("+") }
+            }
+        }
+    ) { padding ->
+        LazyColumn(Modifier.padding(padding).fillMaxSize()) {
+            items(products) { p ->
+                ProductRow(
+                    p = p,
+                    price = money.format(p.priceCents / 100.0),
+                    onClick = { onEdit(p.id) },
+                    onDelete = {
+                        scope.launch {
+                            val prod = container.productRepository.getById(p.id) ?: return@launch
+                            container.productRepository.deleteById(p.id)
+                            container.imageStore.delete(prod.imagePath)
+
+                            // Debounced sync (anti-saturaciÃ³n) :contentReference[oaicite:13]{index=13}
+                            // (clientName/sharedFolderId salen de Settings; por MVP usa "cliente")
+                            container.workScheduler.scheduleDebouncedSync(clientName = "cliente", sharedFolderId = null)
+                        }
+                    }
+                )
+            }
+            item { Spacer(Modifier.height(80.dp)) }
+        }
+    }
+}
+
+@Composable
+private fun ProductRow(
+    p: Product,
+    price: String,
+    onClick: () -> Unit,
+    onDelete: () -> Unit
+) {
+    Card(Modifier.padding(12.dp).fillMaxWidth().clickable(onClick = onClick)) {
+        Row(Modifier.padding(12.dp)) {
+            AsyncImage(model = p.imagePath, contentDescription = null, modifier = Modifier.size(72.dp))
+            Spacer(Modifier.width(12.dp))
+            Column(Modifier.weight(1f)) {
+                Text(price, style = MaterialTheme.typography.titleMedium)
+                Text(p.description ?: "", style = MaterialTheme.typography.bodyMedium)
+            }
+            TextButton(onClick = onDelete) { Text("Eliminar") }
+        }
+    }
+}
+
+
+
+==================== FILE: D:\CatalogoApp\app\src\main\java\com\quirozsolutions\catalogo1boton\ui\screens\RestoreScreen.kt ====================
+@file:OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
+
+package com.quirozsolutions.catalogo1boton.ui.screens
+
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts.GetContent
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
+import com.quirozsolutions.catalogo1boton.AppContainer
+import kotlinx.coroutines.launch
+import java.io.File
+
+@Composable
+fun RestoreScreen(container: AppContainer, onBack: () -> Unit) {
+    val ctx = LocalContext.current
+    val scope = rememberCoroutineScope()
+
+    var status by remember { mutableStateOf("Selecciona un ZIP de backup...") }
+    var loading by remember { mutableStateOf(false) }
+
+    val picker = rememberLauncherForActivityResult(GetContent()) { uri: Uri? ->
+        if (uri == null) return@rememberLauncherForActivityResult
+        scope.launch {
+            loading = true
+            status = "Restaurando desde archivo..."
+            try {
+                val tmp = File(ctx.cacheDir, "import_backup.zip")
+                ctx.contentResolver.openInputStream(uri).use { input ->
+                    requireNotNull(input)
+                    tmp.outputStream().use { output -> input.copyTo(output) }
+                }
+                container.restoreManager.restoreFromZip(tmp)
+                status = "âœ… RestauraciÃ³n completa (archivo)"
+            } catch (e: Exception) {
+                status = "âŒ Error: ${e.message}"
+            } finally {
+                loading = false
+            }
+        }
+    }
+
+    fun restoreFromDrive() {
+        scope.launch {
+            loading = true
+            status = "Buscando backup en Google Drive..."
+            try {
+                val account = container.authManager.lastSignedInAccount()
+                    ?: throw IllegalStateException("No hay sesiÃ³n iniciada con Google")
+
+                // Por defecto: busca en Mi unidad
+                val sharedFolderId: String? = null
+
+                val zip = container.driveSyncManager.downloadLatestBackup(
+                    account = account,
+                    sharedFolderId = sharedFolderId
+                ) ?: throw IllegalStateException("No se encontrÃ³ backup en Drive")
+
+                status = "Restaurando desde Google Drive..."
+                container.restoreManager.restoreFromZip(zip)
+
+                status = "âœ… RestauraciÃ³n completa (Drive)"
+            } catch (e: Exception) {
+                status = "âŒ Error: ${e.message}"
+            } finally {
+                loading = false
+            }
+        }
+    }
+
+    Scaffold(topBar = { TopAppBar(title = { Text("Restaurar") }) }) { padding ->
+        Column(Modifier.padding(padding).padding(16.dp)) {
+            Text(status)
+
+            Spacer(Modifier.height(12.dp))
+
+            Button(
+                onClick = { picker.launch("application/zip") },
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !loading
+            ) {
+                Text("Elegir backup ZIP")
+            }
+
+            Spacer(Modifier.height(8.dp))
+
+            Button(
+                onClick = { restoreFromDrive() },
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !loading
+            ) {
+                Text("Restaurar desde Google Drive")
+            }
+
+            Spacer(Modifier.height(8.dp))
+
+            TextButton(
+                onClick = onBack,
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !loading
+            ) { Text("Volver") }
+        }
+    }
+}
+
+
+
+==================== FILE: D:\CatalogoApp\app\src\main\java\com\quirozsolutions\catalogo1boton\ui\screens\SettingsScreen.kt ====================
+package com.quirozsolutions.catalogo1boton.ui.screens
+
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.common.api.ApiException
+import com.quirozsolutions.catalogo1boton.AppContainer
+import kotlinx.coroutines.launch
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SettingsScreen(
+    container: AppContainer,
+    onBack: () -> Unit,
+    syncNow: suspend (clientName: String, sharedFolderId: String?) -> Unit
+) {
+    val ctx = LocalContext.current
+    val scope = rememberCoroutineScope()
+
+    var clientName by remember { mutableStateOf("cliente") }
+    var sharedFolderId by remember { mutableStateOf("") }
+
+    var sellerWhatsapp by remember { mutableStateOf("") }
+    var sellerInstagram by remember { mutableStateOf("") }
+    var storeLogoPath by remember { mutableStateOf("") }
+
+    // sesiÃ³n
+    var signedEmail by remember { mutableStateOf<String?>(null) }
+    fun refreshSession() {
+        val acc = container.authManager.lastSignedInAccount()
+        signedEmail = acc?.email
+    }
+
+    // Cargar prefs al entrar
+    LaunchedEffect(Unit) {
+        refreshSession()
+        clientName = container.appState.clientNameValue()
+        sharedFolderId = container.appState.sharedFolderIdValue()
+        sellerWhatsapp = container.appState.sellerWhatsappValue()
+        sellerInstagram = container.appState.sellerInstagramValue()
+        storeLogoPath = container.appState.storeLogoPathValue()
+    }
+
+    // âœ… Launcher Google Sign-In (como tu versiÃ³n que sÃ­ funcionaba)
+    val googleSignInLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+        try {
+            val account = task.getResult(ApiException::class.java)
+            signedEmail = account.email
+            Toast.makeText(ctx, "SesiÃ³n iniciada: ${account.email}", Toast.LENGTH_LONG).show()
+
+            // âœ… AUTO-RESTORE: al loguearse, restaurar backup de Drive si existe (y si local estÃ¡ vacÃ­o)
+            scope.launch {
+                try {
+                    // 1) Evitar pisar datos locales
+                    val localProducts = container.productRepository.getAllOnce()
+                    if (localProducts.isNotEmpty()) {
+                        // Si quieres FORZAR restauraciÃ³n aunque haya datos, borra este return
+                        return@launch
+                    }
+
+                    // 2) Tomar el sharedFolderId si el usuario lo configurÃ³ en Ajustes
+                    val sharedId = sharedFolderId.trim().takeIf { it.isNotBlank() }
+
+                    // 3) Descargar y restaurar si hay backup
+                    val zip = container.driveSyncManager.downloadLatestBackup(
+                        account = account,
+                        sharedFolderId = sharedId
+                    )
+
+                    if (zip != null) {
+                        container.restoreManager.restoreFromZip(zip)
+                        Toast.makeText(ctx, "âœ… Backup restaurado desde Drive", Toast.LENGTH_LONG).show()
+                    } else {
+                        Toast.makeText(ctx, "â„¹ï¸ No hay backup en Drive para restaurar", Toast.LENGTH_SHORT).show()
+                    }
+                } catch (e: Exception) {
+                    Toast.makeText(ctx, "âŒ Error restaurando: ${e.message}", Toast.LENGTH_LONG).show()
+                }
+            }
+
+        } catch (e: ApiException) {
+            Toast.makeText(
+                ctx,
+                "Google Sign-In fallÃ³ (code=${e.statusCode})",
+                Toast.LENGTH_LONG
+            ).show()
+            refreshSession()
+        } catch (e: Exception) {
+            Toast.makeText(ctx, "Error: ${e.message}", Toast.LENGTH_LONG).show()
+            refreshSession()
+        }
+    }
+
+
+    // Picker logo
+    val pickLogo = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri ->
+        if (uri != null) {
+            try {
+                val path = container.imageStore.saveFromUri(uri)
+                storeLogoPath = path
+                container.appState.setStoreLogoPath(path)
+                Toast.makeText(ctx, "Logo guardado âœ…", Toast.LENGTH_SHORT).show()
+            } catch (t: Throwable) {
+                Toast.makeText(ctx, "No se pudo guardar el logo", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    Scaffold(
+        topBar = { TopAppBar(title = { Text("Ajustes") }) }
+    ) { padding ->
+        Column(
+            Modifier
+                .padding(padding)
+                .padding(16.dp)
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            OutlinedTextField(
+                value = clientName,
+                onValueChange = {
+                    clientName = it
+                    container.appState.setClientName(it)
+                },
+                label = { Text("Nombre cliente (para backup)") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            OutlinedTextField(
+                value = sharedFolderId,
+                onValueChange = {
+                    sharedFolderId = it
+                    container.appState.setSharedFolderId(it)
+                },
+                label = { Text("Shared Folder ID (Drive) (opcional)") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Divider()
+
+            OutlinedTextField(
+                value = sellerWhatsapp,
+                onValueChange = {
+                    sellerWhatsapp = it
+                    container.appState.setSellerWhatsapp(it)
+                },
+                label = { Text("WhatsApp vendedor (para la portada)") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            OutlinedTextField(
+                value = sellerInstagram,
+                onValueChange = {
+                    sellerInstagram = it
+                    container.appState.setSellerInstagram(it)
+                },
+                label = { Text("Instagram vendedor (para la portada)") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                Button(onClick = { pickLogo.launch("image/*") }) {
+                    Text("Elegir logo")
+                }
+                Text(
+                    text = if (storeLogoPath.isBlank()) "Sin logo" else "Logo âœ…",
+                    modifier = Modifier.padding(top = 10.dp)
+                )
+            }
+
+            Divider()
+
+            Text("SesiÃ³n: ${signedEmail ?: "(no iniciada)"}")
+
+            Button(
+                onClick = {
+                    googleSignInLauncher.launch(
+                        container.authManager.signInClient().signInIntent
+                    )
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Iniciar sesiÃ³n con Google (1 vez)")
+            }
+
+            Button(
+                onClick = {
+                    scope.launch {
+                        try {
+                            val acc = container.authManager.lastSignedInAccount()
+                            if (acc == null) {
+                                Toast.makeText(ctx, "Inicia sesiÃ³n primero", Toast.LENGTH_SHORT).show()
+                                return@launch
+                            }
+
+                            val folderIdOrNull = sharedFolderId.trim().ifBlank { null }
+                            val name = clientName.trim().ifBlank { "cliente" }
+
+                            syncNow(name, folderIdOrNull)
+                            Toast.makeText(ctx, "SincronizaciÃ³n lanzada", Toast.LENGTH_SHORT).show()
+                        } catch (e: Exception) {
+                            Toast.makeText(ctx, "Error sincronizando: ${e.message}", Toast.LENGTH_LONG).show()
+                        }
+                    }
+                },
+                modifier = Modifier.fillMaxWidth(),
+                enabled = signedEmail != null
+            ) {
+                Text("Sincronizar ahora")
+            }
+
+            TextButton(onClick = onBack, modifier = Modifier.fillMaxWidth()) {
+                Text("Volver")
+            }
+        }
+    }
+}
+
+
+
+==================== FILE: D:\CatalogoApp\app\src\main\java\com\quirozsolutions\catalogo1boton\ui\state\AppState.kt ====================
+package com.quirozsolutions.catalogo1boton.ui.state
+
+import android.content.Context
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.preferencesDataStore
+import com.quirozsolutions.catalogo1boton.AppContainer
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
+
+private val Context.dataStore by preferencesDataStore(name = "app_prefs")
+
+class AppState(
+    private val context: Context,
+    private val container: AppContainer
+) {
+    private val scope = CoroutineScope(Dispatchers.IO)
+
+    companion object {
+        private val KEY_CLIENT_NAME = stringPreferencesKey("client_name")
+        private val KEY_SHARED_FOLDER_ID = stringPreferencesKey("shared_folder_id")
+
+        // âœ… Nuevos
+        private val KEY_SELLER_WHATSAPP = stringPreferencesKey("seller_whatsapp")
+        private val KEY_SELLER_INSTAGRAM = stringPreferencesKey("seller_instagram")
+        private val KEY_STORE_LOGO_PATH = stringPreferencesKey("store_logo_path")
+    }
+
+    val clientName: Flow<String> =
+        context.dataStore.data.map { prefs -> prefs[KEY_CLIENT_NAME] ?: "cliente" }
+
+    val sharedFolderId: Flow<String> =
+        context.dataStore.data.map { prefs -> prefs[KEY_SHARED_FOLDER_ID] ?: "" }
+
+    val sellerWhatsapp: Flow<String> =
+        context.dataStore.data.map { prefs -> prefs[KEY_SELLER_WHATSAPP] ?: "" }
+
+    val sellerInstagram: Flow<String> =
+        context.dataStore.data.map { prefs -> prefs[KEY_SELLER_INSTAGRAM] ?: "" }
+
+    val storeLogoPath: Flow<String> =
+        context.dataStore.data.map { prefs -> prefs[KEY_STORE_LOGO_PATH] ?: "" }
+
+    suspend fun clientNameValue(): String =
+        context.dataStore.data.map { it[KEY_CLIENT_NAME] ?: "cliente" }.first()
+
+    suspend fun sharedFolderIdValue(): String =
+        context.dataStore.data.map { it[KEY_SHARED_FOLDER_ID] ?: "" }.first()
+
+    suspend fun sellerWhatsappValue(): String =
+        context.dataStore.data.map { it[KEY_SELLER_WHATSAPP] ?: "" }.first()
+
+    suspend fun sellerInstagramValue(): String =
+        context.dataStore.data.map { it[KEY_SELLER_INSTAGRAM] ?: "" }.first()
+
+    suspend fun storeLogoPathValue(): String =
+        context.dataStore.data.map { it[KEY_STORE_LOGO_PATH] ?: "" }.first()
+
+    fun setClientName(value: String) {
+        scope.launch { context.dataStore.edit { it[KEY_CLIENT_NAME] = value.trim() } }
+    }
+
+    fun setSharedFolderId(value: String) {
+        scope.launch { context.dataStore.edit { it[KEY_SHARED_FOLDER_ID] = value.trim() } }
+    }
+
+    fun setSellerWhatsapp(value: String) {
+        scope.launch { context.dataStore.edit { it[KEY_SELLER_WHATSAPP] = value.trim() } }
+    }
+
+    fun setSellerInstagram(value: String) {
+        scope.launch { context.dataStore.edit { it[KEY_SELLER_INSTAGRAM] = value.trim() } }
+    }
+
+    fun setStoreLogoPath(value: String) {
+        scope.launch { context.dataStore.edit { it[KEY_STORE_LOGO_PATH] = value.trim() } }
+    }
+
+    /**
+     * Llama esto despuÃ©s de crear/editar/eliminar productos,
+     * o desde "Sincronizar ahora".
+     */
+    fun scheduleSyncNowOrDebounced(debounced: Boolean = true) {
+        scope.launch {
+            val client = clientNameValue()
+            val shared = sharedFolderIdValue().ifBlank { null }
+
+            if (debounced) {
+                container.workScheduler.scheduleDebouncedSync(clientName = client, sharedFolderId = shared)
+            } else {
+                container.workScheduler.scheduleImmediateSync(clientName = client, sharedFolderId = shared)
+            }
+        }
+    }}
+
+
+==================== FILE: D:\CatalogoApp\app\src\main\java\com\quirozsolutions\catalogo1boton\ui\theme\Color.kt ====================
+package com.quirozsolutions.catalogo1boton.ui.theme
+
+import androidx.compose.ui.graphics.Color
+
+val Purple80 = Color(0xFFD0BCFF)
+val PurpleGrey80 = Color(0xFFCCC2DC)
+val Pink80 = Color(0xFFEFB8C8)
+
+val Purple40 = Color(0xFF6650a4)
+val PurpleGrey40 = Color(0xFF625b71)
+val Pink40 = Color(0xFF7D5260)
+
+
+==================== FILE: D:\CatalogoApp\app\src\main\java\com\quirozsolutions\catalogo1boton\ui\theme\Theme.kt ====================
+package com.quirozsolutions.catalogo1boton.ui.theme
+
+import android.app.Activity
+import android.os.Build
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.dynamicDarkColorScheme
+import androidx.compose.material3.dynamicLightColorScheme
+import androidx.compose.material3.lightColorScheme
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
+
+private val DarkColorScheme = darkColorScheme(
+    primary = Purple80,
+    secondary = PurpleGrey80,
+    tertiary = Pink80
+)
+
+private val LightColorScheme = lightColorScheme(
+    primary = Purple40,
+    secondary = PurpleGrey40,
+    tertiary = Pink40
+
+    /* Other default colors to override
+    background = Color(0xFFFFFBFE),
+    surface = Color(0xFFFFFBFE),
+    onPrimary = Color.White,
+    onSecondary = Color.White,
+    onTertiary = Color.White,
+    onBackground = Color(0xFF1C1B1F),
+    onSurface = Color(0xFF1C1B1F),
+    */
+)
+
+@Composable
+fun Catalogo1botonTheme(
+    darkTheme: Boolean = isSystemInDarkTheme(),
+    // Dynamic color is available on Android 12+
+    dynamicColor: Boolean = true,
+    content: @Composable () -> Unit
+) {
+    val colorScheme = when {
+        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+            val context = LocalContext.current
+            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+        }
+
+        darkTheme -> DarkColorScheme
+        else -> LightColorScheme
+    }
+
+    MaterialTheme(
+        colorScheme = colorScheme,
+        typography = Typography,
+        content = content
+    )
+}
+
+
+==================== FILE: D:\CatalogoApp\app\src\main\java\com\quirozsolutions\catalogo1boton\ui\theme\Type.kt ====================
+package com.quirozsolutions.catalogo1boton.ui.theme
+
+import androidx.compose.material3.Typography
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
+
+// Set of Material typography styles to start with
+val Typography = Typography(
+    bodyLarge = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Normal,
+        fontSize = 16.sp,
+        lineHeight = 24.sp,
+        letterSpacing = 0.5.sp
+    )
+    /* Other default text styles to override
+    titleLarge = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Normal,
+        fontSize = 22.sp,
+        lineHeight = 28.sp,
+        letterSpacing = 0.sp
+    ),
+    labelSmall = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Medium,
+        fontSize = 11.sp,
+        lineHeight = 16.sp,
+        letterSpacing = 0.5.sp
+    )
+    */
+)
+
+
+==================== FILE: D:\CatalogoApp\app\src\main\res\drawable\ic_launcher_background.xml ====================
+<?xml version="1.0" encoding="utf-8"?>
+<vector
+    android:height="108dp"
+    android:width="108dp"
+    android:viewportHeight="108"
+    android:viewportWidth="108"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <path android:fillColor="#3DDC84"
+          android:pathData="M0,0h108v108h-108z"/>
+    <path android:fillColor="#00000000" android:pathData="M9,0L9,108"
+          android:strokeColor="#33FFFFFF" android:strokeWidth="0.8"/>
+    <path android:fillColor="#00000000" android:pathData="M19,0L19,108"
+          android:strokeColor="#33FFFFFF" android:strokeWidth="0.8"/>
+    <path android:fillColor="#00000000" android:pathData="M29,0L29,108"
+          android:strokeColor="#33FFFFFF" android:strokeWidth="0.8"/>
+    <path android:fillColor="#00000000" android:pathData="M39,0L39,108"
+          android:strokeColor="#33FFFFFF" android:strokeWidth="0.8"/>
+    <path android:fillColor="#00000000" android:pathData="M49,0L49,108"
+          android:strokeColor="#33FFFFFF" android:strokeWidth="0.8"/>
+    <path android:fillColor="#00000000" android:pathData="M59,0L59,108"
+          android:strokeColor="#33FFFFFF" android:strokeWidth="0.8"/>
+    <path android:fillColor="#00000000" android:pathData="M69,0L69,108"
+          android:strokeColor="#33FFFFFF" android:strokeWidth="0.8"/>
+    <path android:fillColor="#00000000" android:pathData="M79,0L79,108"
+          android:strokeColor="#33FFFFFF" android:strokeWidth="0.8"/>
+    <path android:fillColor="#00000000" android:pathData="M89,0L89,108"
+          android:strokeColor="#33FFFFFF" android:strokeWidth="0.8"/>
+    <path android:fillColor="#00000000" android:pathData="M99,0L99,108"
+          android:strokeColor="#33FFFFFF" android:strokeWidth="0.8"/>
+    <path android:fillColor="#00000000" android:pathData="M0,9L108,9"
+          android:strokeColor="#33FFFFFF" android:strokeWidth="0.8"/>
+    <path android:fillColor="#00000000" android:pathData="M0,19L108,19"
+          android:strokeColor="#33FFFFFF" android:strokeWidth="0.8"/>
+    <path android:fillColor="#00000000" android:pathData="M0,29L108,29"
+          android:strokeColor="#33FFFFFF" android:strokeWidth="0.8"/>
+    <path android:fillColor="#00000000" android:pathData="M0,39L108,39"
+          android:strokeColor="#33FFFFFF" android:strokeWidth="0.8"/>
+    <path android:fillColor="#00000000" android:pathData="M0,49L108,49"
+          android:strokeColor="#33FFFFFF" android:strokeWidth="0.8"/>
+    <path android:fillColor="#00000000" android:pathData="M0,59L108,59"
+          android:strokeColor="#33FFFFFF" android:strokeWidth="0.8"/>
+    <path android:fillColor="#00000000" android:pathData="M0,69L108,69"
+          android:strokeColor="#33FFFFFF" android:strokeWidth="0.8"/>
+    <path android:fillColor="#00000000" android:pathData="M0,79L108,79"
+          android:strokeColor="#33FFFFFF" android:strokeWidth="0.8"/>
+    <path android:fillColor="#00000000" android:pathData="M0,89L108,89"
+          android:strokeColor="#33FFFFFF" android:strokeWidth="0.8"/>
+    <path android:fillColor="#00000000" android:pathData="M0,99L108,99"
+          android:strokeColor="#33FFFFFF" android:strokeWidth="0.8"/>
+    <path android:fillColor="#00000000" android:pathData="M19,29L89,29"
+          android:strokeColor="#33FFFFFF" android:strokeWidth="0.8"/>
+    <path android:fillColor="#00000000" android:pathData="M19,39L89,39"
+          android:strokeColor="#33FFFFFF" android:strokeWidth="0.8"/>
+    <path android:fillColor="#00000000" android:pathData="M19,49L89,49"
+          android:strokeColor="#33FFFFFF" android:strokeWidth="0.8"/>
+    <path android:fillColor="#00000000" android:pathData="M19,59L89,59"
+          android:strokeColor="#33FFFFFF" android:strokeWidth="0.8"/>
+    <path android:fillColor="#00000000" android:pathData="M19,69L89,69"
+          android:strokeColor="#33FFFFFF" android:strokeWidth="0.8"/>
+    <path android:fillColor="#00000000" android:pathData="M19,79L89,79"
+          android:strokeColor="#33FFFFFF" android:strokeWidth="0.8"/>
+    <path android:fillColor="#00000000" android:pathData="M29,19L29,89"
+          android:strokeColor="#33FFFFFF" android:strokeWidth="0.8"/>
+    <path android:fillColor="#00000000" android:pathData="M39,19L39,89"
+          android:strokeColor="#33FFFFFF" android:strokeWidth="0.8"/>
+    <path android:fillColor="#00000000" android:pathData="M49,19L49,89"
+          android:strokeColor="#33FFFFFF" android:strokeWidth="0.8"/>
+    <path android:fillColor="#00000000" android:pathData="M59,19L59,89"
+          android:strokeColor="#33FFFFFF" android:strokeWidth="0.8"/>
+    <path android:fillColor="#00000000" android:pathData="M69,19L69,89"
+          android:strokeColor="#33FFFFFF" android:strokeWidth="0.8"/>
+    <path android:fillColor="#00000000" android:pathData="M79,19L79,89"
+          android:strokeColor="#33FFFFFF" android:strokeWidth="0.8"/>
+</vector>
+
+
+
+==================== FILE: D:\CatalogoApp\app\src\main\res\drawable\ic_launcher_foreground.xml ====================
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path android:pathData="M31,63.928c0,0 6.4,-11 12.1,-13.1c7.2,-2.6 26,-1.4 26,-1.4l38.1,38.1L107,108.928l-32,-1L31,63.928z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:endX="85.84757"
+                android:endY="92.4963"
+                android:startX="42.9492"
+                android:startY="49.59793"
+                android:type="linear">
+                <item
+                    android:color="#44000000"
+                    android:offset="0.0" />
+                <item
+                    android:color="#00000000"
+                    android:offset="1.0" />
+            </gradient>
+        </aapt:attr>
+    </path>
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillType="nonZero"
+        android:pathData="M65.3,45.828l3.8,-6.6c0.2,-0.4 0.1,-0.9 -0.3,-1.1c-0.4,-0.2 -0.9,-0.1 -1.1,0.3l-3.9,6.7c-6.3,-2.8 -13.4,-2.8 -19.7,0l-3.9,-6.7c-0.2,-0.4 -0.7,-0.5 -1.1,-0.3C38.8,38.328 38.7,38.828 38.9,39.228l3.8,6.6C36.2,49.428 31.7,56.028 31,63.928h46C76.3,56.028 71.8,49.428 65.3,45.828zM43.4,57.328c-0.8,0 -1.5,-0.5 -1.8,-1.2c-0.3,-0.7 -0.1,-1.5 0.4,-2.1c0.5,-0.5 1.4,-0.7 2.1,-0.4c0.7,0.3 1.2,1 1.2,1.8C45.3,56.528 44.5,57.328 43.4,57.328L43.4,57.328zM64.6,57.328c-0.8,0 -1.5,-0.5 -1.8,-1.2s-0.1,-1.5 0.4,-2.1c0.5,-0.5 1.4,-0.7 2.1,-0.4c0.7,0.3 1.2,1 1.2,1.8C66.5,56.528 65.6,57.328 64.6,57.328L64.6,57.328z"
+        android:strokeWidth="1"
+        android:strokeColor="#00000000" />
+</vector>
+
+
+==================== FILE: D:\CatalogoApp\app\src\main\res\mipmap-anydpi-v26\ic_launcher.xml ====================
+<?xml version="1.0" encoding="utf-8"?>
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@drawable/ic_launcher_background"/>
+    <foreground android:drawable="@mipmap/ic_launcher_foreground"/>
+</adaptive-icon>
+
+
+==================== FILE: D:\CatalogoApp\app\src\main\res\mipmap-anydpi-v26\ic_launcher_round.xml ====================
+<?xml version="1.0" encoding="utf-8"?>
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@drawable/ic_launcher_background"/>
+    <foreground android:drawable="@mipmap/ic_launcher_foreground"/>
+</adaptive-icon>
+
+
+==================== FILE: D:\CatalogoApp\app\src\main\res\values\colors.xml ====================
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+</resources>
+
+
+==================== FILE: D:\CatalogoApp\app\src\main\res\values\strings.xml ====================
+<resources>
+    <string name="app_name">catalogo1boton</string>
+</resources>
+
+
+==================== FILE: D:\CatalogoApp\app\src\main\res\values\themes.xml ====================
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.Catalogo1boton" parent="android:Theme.Material.Light.NoActionBar" />
+</resources>
+
+
+==================== FILE: D:\CatalogoApp\app\src\main\res\xml\backup_rules.xml ====================
+<?xml version="1.0" encoding="utf-8"?><!--
+   Sample backup rules file; uncomment and customize as necessary.
+   See https://developer.android.com/guide/topics/data/autobackup
+   for details.
+   Note: This file is ignored for devices older than API 31
+   See https://developer.android.com/about/versions/12/backup-restore
+-->
+<full-backup-content>
+    <!--
+   <include domain="sharedpref" path="."/>
+   <exclude domain="sharedpref" path="device.xml"/>
+-->
+</full-backup-content>
+
+
+==================== FILE: D:\CatalogoApp\app\src\main\res\xml\data_extraction_rules.xml ====================
+<?xml version="1.0" encoding="utf-8"?><!--
+   Sample data extraction rules file; uncomment and customize as necessary.
+   See https://developer.android.com/about/versions/12/backup-restore#xml-changes
+   for details.
+-->
+<data-extraction-rules>
+    <cloud-backup>
+        <!-- TODO: Use <include> and <exclude> to control what is backed up.
+        <include .../>
+        <exclude .../>
+        -->
+    </cloud-backup>
+    <!--
+    <device-transfer>
+        <include .../>
+        <exclude .../>
+    </device-transfer>
+    -->
+</data-extraction-rules>
+
+
+==================== FILE: D:\CatalogoApp\app\src\main\res\xml\file_paths.xml ====================
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+    <files-path name="files" path="." />
+    <cache-path name="cache" path="." />
+</paths>
+
+
+
+==================== FILE: D:\CatalogoApp\app\src\test\java\com\quirozsolutions\catalogo1boton\ExampleUnitTest.kt ====================
+package com.quirozsolutions.catalogo1boton
+
+import org.junit.Test
+
+import org.junit.Assert.*
+
+/**
+ * Example local unit test, which will execute on the development machine (host).
+ *
+ * See [testing documentation](http://d.android.com/tools/testing).
+ */
+class ExampleUnitTest {
+    @Test
+    fun addition_isCorrect() {
+        assertEquals(4, 2 + 2)
+    }
+}
+
+
+==================== FILE: D:\CatalogoApp\build.gradle.kts ====================
+plugins {
+    id("com.android.application") version "8.5.2" apply false
+    id("org.jetbrains.kotlin.android") version "1.9.24" apply false
+    id("com.google.devtools.ksp") version "1.9.24-1.0.20" apply false
+}
+
+
+
+==================== FILE: D:\CatalogoApp\gradle.properties ====================
+# Project-wide Gradle settings.
+# IDE (e.g. Android Studio) users:
+# Gradle settings configured through the IDE *will override*
+# any settings specified in this file.
+# For more details on how to configure your build environment visit
+# http://www.gradle.org/docs/current/userguide/build_environment.html
+# Specifies the JVM arguments used for the daemon process.
+# The setting is particularly useful for tweaking memory settings.
+org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
+# When configured, Gradle will run in incubating parallel mode.
+# This option should only be used with decoupled projects. For more details, visit
+# https://developer.android.com/r/tools/gradle-multi-project-decoupled-projects
+# org.gradle.parallel=true
+# AndroidX package structure to make it clearer which packages are bundled with the
+# Android operating system, and which are packaged with your app's APK
+# https://developer.android.com/topic/libraries/support-library/androidx-rn
+android.useAndroidX=true
+# Kotlin code style for this project: "official" or "obsolete":
+kotlin.code.style=official
+# Enables namespacing of each library's R class so that its R class includes only the
+# resources declared in the library itself and none from the library's dependencies,
+# thereby reducing the size of the R class for that library
+android.nonTransitiveRClass=true
+
+org.gradle.java.home=C:\\Program Files\\Java\\jdk-17
+
+
+
+
+==================== FILE: D:\CatalogoApp\gradle\libs.versions.toml ====================
+[versions]
+agp = "8.13.2"
+kotlin = "2.0.21"
+coreKtx = "1.17.0"
+junit = "4.13.2"
+junitVersion = "1.3.0"
+espressoCore = "3.7.0"
+lifecycleRuntimeKtx = "2.10.0"
+activityCompose = "1.12.2"
+composeBom = "2024.09.00"
+
+[libraries]
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
+androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
+androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
+androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
+androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
+androidx-compose-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
+androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
+androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+androidx-compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
+androidx-compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
+androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+
+
+
+
+==================== FILE: D:\CatalogoApp\gradle\wrapper\gradle-wrapper.properties ====================
+#Mon Jan 12 20:00:06 COT 2026
+distributionBase=GRADLE_USER_HOME
+distributionPath=wrapper/dists
+distributionUrl=https\://services.gradle.org/distributions/gradle-8.13-bin.zip
+networkTimeout=10000
+validateDistributionUrl=true
+zipStoreBase=GRADLE_USER_HOME
+zipStorePath=wrapper/dists
+
+
+
+==================== FILE: D:\CatalogoApp\gradlew ====================
+#!/bin/sh
+
+#
+# Copyright Â© 2015 the original authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+##############################################################################
+#
+#   Gradle start up script for POSIX generated by Gradle.
+#
+#   Important for running:
+#
+#   (1) You need a POSIX-compliant shell to run this script. If your /bin/sh is
+#       noncompliant, but you have some other compliant shell such as ksh or
+#       bash, then to run this script, type that shell name before the whole
+#       command line, like:
+#
+#           ksh Gradle
+#
+#       Busybox and similar reduced shells will NOT work, because this script
+#       requires all of these POSIX shell features:
+#         * functions;
+#         * expansions Â«$varÂ», Â«${var}Â», Â«${var:-default}Â», Â«${var+SET}Â»,
+#           Â«${var#prefix}Â», Â«${var%suffix}Â», and Â«$( cmd )Â»;
+#         * compound commands having a testable exit status, especially Â«caseÂ»;
+#         * various built-in commands including Â«commandÂ», Â«setÂ», and Â«ulimitÂ».
+#
+#   Important for patching:
+#
+#   (2) This script targets any POSIX shell, so it avoids extensions provided
+#       by Bash, Ksh, etc; in particular arrays are avoided.
+#
+#       The "traditional" practice of packing multiple parameters into a
+#       space-separated string is a well documented source of bugs and security
+#       problems, so this is (mostly) avoided, by progressively accumulating
+#       options in "$@", and eventually passing that to Java.
+#
+#       Where the inherited environment variables (DEFAULT_JVM_OPTS, JAVA_OPTS,
+#       and GRADLE_OPTS) rely on word-splitting, this is performed explicitly;
+#       see the in-line comments for details.
+#
+#       There are tweaks for specific operating systems such as AIX, CygWin,
+#       Darwin, MinGW, and NonStop.
+#
+#   (3) This script is generated from the Groovy template
+#       https://github.com/gradle/gradle/blob/HEAD/platforms/jvm/plugins-application/src/main/resources/org/gradle/api/internal/plugins/unixStartScript.txt
+#       within the Gradle project.
+#
+#       You can find Gradle at https://github.com/gradle/gradle/.
+#
+##############################################################################
+
+# Attempt to set APP_HOME
+
+# Resolve links: $0 may be a link
+app_path=$0
+
+# Need this for daisy-chained symlinks.
+while
+    APP_HOME=${app_path%"${app_path##*/}"}  # leaves a trailing /; empty if no leading path
+    [ -h "$app_path" ]
+do
+    ls=$( ls -ld "$app_path" )
+    link=${ls#*' -> '}
+    case $link in             #(
+      /*)   app_path=$link ;; #(
+      *)    app_path=$APP_HOME$link ;;
+    esac
+done
+
+# This is normally unused
+# shellcheck disable=SC2034
+APP_BASE_NAME=${0##*/}
+# Discard cd standard output in case $CDPATH is set (https://github.com/gradle/gradle/issues/25036)
+APP_HOME=$( cd -P "${APP_HOME:-./}" > /dev/null && printf '%s\n' "$PWD" ) || exit
+
+# Use the maximum available, or set MAX_FD != -1 to use that value.
+MAX_FD=maximum
+
+warn () {
+    echo "$*"
+} >&2
+
+die () {
+    echo
+    echo "$*"
+    echo
+    exit 1
+} >&2
+
+# OS specific support (must be 'true' or 'false').
+cygwin=false
+msys=false
+darwin=false
+nonstop=false
+case "$( uname )" in                #(
+  CYGWIN* )         cygwin=true  ;; #(
+  Darwin* )         darwin=true  ;; #(
+  MSYS* | MINGW* )  msys=true    ;; #(
+  NONSTOP* )        nonstop=true ;;
+esac
+
+CLASSPATH="\\\"\\\""
+
+
+# Determine the Java command to use to start the JVM.
+if [ -n "$JAVA_HOME" ] ; then
+    if [ -x "$JAVA_HOME/jre/sh/java" ] ; then
+        # IBM's JDK on AIX uses strange locations for the executables
+        JAVACMD=$JAVA_HOME/jre/sh/java
+    else
+        JAVACMD=$JAVA_HOME/bin/java
+    fi
+    if [ ! -x "$JAVACMD" ] ; then
+        die "ERROR: JAVA_HOME is set to an invalid directory: $JAVA_HOME
+
+Please set the JAVA_HOME variable in your environment to match the
+location of your Java installation."
+    fi
+else
+    JAVACMD=java
+    if ! command -v java >/dev/null 2>&1
+    then
+        die "ERROR: JAVA_HOME is not set and no 'java' command could be found in your PATH.
+
+Please set the JAVA_HOME variable in your environment to match the
+location of your Java installation."
+    fi
+fi
+
+# Increase the maximum file descriptors if we can.
+if ! "$cygwin" && ! "$darwin" && ! "$nonstop" ; then
+    case $MAX_FD in #(
+      max*)
+        # In POSIX sh, ulimit -H is undefined. That's why the result is checked to see if it worked.
+        # shellcheck disable=SC2039,SC3045
+        MAX_FD=$( ulimit -H -n ) ||
+            warn "Could not query maximum file descriptor limit"
+    esac
+    case $MAX_FD in  #(
+      '' | soft) :;; #(
+      *)
+        # In POSIX sh, ulimit -n is undefined. That's why the result is checked to see if it worked.
+        # shellcheck disable=SC2039,SC3045
+        ulimit -n "$MAX_FD" ||
+            warn "Could not set maximum file descriptor limit to $MAX_FD"
+    esac
+fi
+
+# Collect all arguments for the java command, stacking in reverse order:
+#   * args from the command line
+#   * the main class name
+#   * -classpath
+#   * -D...appname settings
+#   * --module-path (only if needed)
+#   * DEFAULT_JVM_OPTS, JAVA_OPTS, and GRADLE_OPTS environment variables.
+
+# For Cygwin or MSYS, switch paths to Windows format before running java
+if "$cygwin" || "$msys" ; then
+    APP_HOME=$( cygpath --path --mixed "$APP_HOME" )
+    CLASSPATH=$( cygpath --path --mixed "$CLASSPATH" )
+
+    JAVACMD=$( cygpath --unix "$JAVACMD" )
+
+    # Now convert the arguments - kludge to limit ourselves to /bin/sh
+    for arg do
+        if
+            case $arg in                                #(
+              -*)   false ;;                            # don't mess with options #(
+              /?*)  t=${arg#/} t=/${t%%/*}              # looks like a POSIX filepath
+                    [ -e "$t" ] ;;                      #(
+              *)    false ;;
+            esac
+        then
+            arg=$( cygpath --path --ignore --mixed "$arg" )
+        fi
+        # Roll the args list around exactly as many times as the number of
+        # args, so each arg winds up back in the position where it started, but
+        # possibly modified.
+        #
+        # NB: a `for` loop captures its iteration list before it begins, so
+        # changing the positional parameters here affects neither the number of
+        # iterations, nor the values presented in `arg`.
+        shift                   # remove old arg
+        set -- "$@" "$arg"      # push replacement arg
+    done
+fi
+
+
+# Add default JVM options here. You can also use JAVA_OPTS and GRADLE_OPTS to pass JVM options to this script.
+DEFAULT_JVM_OPTS='"-Xmx64m" "-Xms64m"'
+
+# Collect all arguments for the java command:
+#   * DEFAULT_JVM_OPTS, JAVA_OPTS, and optsEnvironmentVar are not allowed to contain shell fragments,
+#     and any embedded shellness will be escaped.
+#   * For example: A user cannot expect ${Hostname} to be expanded, as it is an environment variable and will be
+#     treated as '${Hostname}' itself on the command line.
+
+set -- \
+        "-Dorg.gradle.appname=$APP_BASE_NAME" \
+        -classpath "$CLASSPATH" \
+        -jar "$APP_HOME/gradle/wrapper/gradle-wrapper.jar" \
+        "$@"
+
+# Stop when "xargs" is not available.
+if ! command -v xargs >/dev/null 2>&1
+then
+    die "xargs is not available"
+fi
+
+# Use "xargs" to parse quoted args.
+#
+# With -n1 it outputs one arg per line, with the quotes and backslashes removed.
+#
+# In Bash we could simply go:
+#
+#   readarray ARGS < <( xargs -n1 <<<"$var" ) &&
+#   set -- "${ARGS[@]}" "$@"
+#
+# but POSIX shell has neither arrays nor command substitution, so instead we
+# post-process each arg (as a line of input to sed) to backslash-escape any
+# character that might be a shell metacharacter, then use eval to reverse
+# that process (while maintaining the separation between arguments), and wrap
+# the whole thing up as a single "set" statement.
+#
+# This will of course break if any of these variables contains a newline or
+# an unmatched quote.
+#
+
+eval "set -- $(
+        printf '%s\n' "$DEFAULT_JVM_OPTS $JAVA_OPTS $GRADLE_OPTS" |
+        xargs -n1 |
+        sed ' s~[^-[:alnum:]+,./:=@_]~\\&~g; ' |
+        tr '\n' ' '
+    )" '"$@"'
+
+exec "$JAVACMD" "$@"
+
+
+
+==================== FILE: D:\CatalogoApp\gradlew.bat ====================
+@rem
+@rem Copyright 2015 the original author or authors.
+@rem
+@rem Licensed under the Apache License, Version 2.0 (the "License");
+@rem you may not use this file except in compliance with the License.
+@rem You may obtain a copy of the License at
+@rem
+@rem      https://www.apache.org/licenses/LICENSE-2.0
+@rem
+@rem Unless required by applicable law or agreed to in writing, software
+@rem distributed under the License is distributed on an "AS IS" BASIS,
+@rem WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+@rem See the License for the specific language governing permissions and
+@rem limitations under the License.
+@rem
+@rem SPDX-License-Identifier: Apache-2.0
+@rem
+
+@if "%DEBUG%"=="" @echo off
+@rem ##########################################################################
+@rem
+@rem  Gradle startup script for Windows
+@rem
+@rem ##########################################################################
+
+@rem Set local scope for the variables with windows NT shell
+if "%OS%"=="Windows_NT" setlocal
+
+set DIRNAME=%~dp0
+if "%DIRNAME%"=="" set DIRNAME=.
+@rem This is normally unused
+set APP_BASE_NAME=%~n0
+set APP_HOME=%DIRNAME%
+
+@rem Resolve any "." and ".." in APP_HOME to make it shorter.
+for %%i in ("%APP_HOME%") do set APP_HOME=%%~fi
+
+@rem Add default JVM options here. You can also use JAVA_OPTS and GRADLE_OPTS to pass JVM options to this script.
+set DEFAULT_JVM_OPTS="-Xmx64m" "-Xms64m"
+
+@rem Find java.exe
+if defined JAVA_HOME goto findJavaFromJavaHome
+
+set JAVA_EXE=java.exe
+%JAVA_EXE% -version >NUL 2>&1
+if %ERRORLEVEL% equ 0 goto execute
+
+echo. 1>&2
+echo ERROR: JAVA_HOME is not set and no 'java' command could be found in your PATH. 1>&2
+echo. 1>&2
+echo Please set the JAVA_HOME variable in your environment to match the 1>&2
+echo location of your Java installation. 1>&2
+
+goto fail
+
+:findJavaFromJavaHome
+set JAVA_HOME=%JAVA_HOME:"=%
+set JAVA_EXE=%JAVA_HOME%/bin/java.exe
+
+if exist "%JAVA_EXE%" goto execute
+
+echo. 1>&2
+echo ERROR: JAVA_HOME is set to an invalid directory: %JAVA_HOME% 1>&2
+echo. 1>&2
+echo Please set the JAVA_HOME variable in your environment to match the 1>&2
+echo location of your Java installation. 1>&2
+
+goto fail
+
+:execute
+@rem Setup the command line
+
+set CLASSPATH=
+
+
+@rem Execute Gradle
+"%JAVA_EXE%" %DEFAULT_JVM_OPTS% %JAVA_OPTS% %GRADLE_OPTS% "-Dorg.gradle.appname=%APP_BASE_NAME%" -classpath "%CLASSPATH%" -jar "%APP_HOME%\gradle\wrapper\gradle-wrapper.jar" %*
+
+:end
+@rem End local scope for the variables with windows NT shell
+if %ERRORLEVEL% equ 0 goto mainEnd
+
+:fail
+rem Set variable GRADLE_EXIT_CONSOLE if you need the _script_ return code instead of
+rem the _cmd.exe /c_ return code!
+set EXIT_CODE=%ERRORLEVEL%
+if %EXIT_CODE% equ 0 set EXIT_CODE=1
+if not ""=="%GRADLE_EXIT_CONSOLE%" exit %EXIT_CODE%
+exit /b %EXIT_CODE%
+
+:mainEnd
+if "%OS%"=="Windows_NT" endlocal
+
+:omega
+
+
+
+==================== FILE: D:\CatalogoApp\local.properties ====================
+## This file must *NOT* be checked into Version Control Systems,
+# as it contains information specific to your local configuration.
+#
+# Location of the SDK. This is only used by Gradle.
+# For customization when using a Version Control System, please read the
+# header note.
+#Mon Feb 16 11:27:49 COT 2026
+sdk.dir=C\:\\Users\\dante\\AppData\\Local\\Android\\Sdk
+
+
+
+==================== FILE: D:\CatalogoApp\settings.gradle.kts ====================
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+rootProject.name = "catalogo1boton"
+include(":app")
+
+
+

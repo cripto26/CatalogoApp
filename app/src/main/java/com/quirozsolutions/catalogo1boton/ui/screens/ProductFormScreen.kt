@@ -1,16 +1,19 @@
-@file:OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
+@file:OptIn(ExperimentalMaterial3Api::class)
 
 package com.quirozsolutions.catalogo1boton.ui.screens
-
 
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
 import com.quirozsolutions.catalogo1boton.AppContainer
@@ -27,6 +30,7 @@ fun ProductFormScreen(
 ) {
     val ctx = LocalContext.current
     val scope = rememberCoroutineScope()
+    val focusManager = LocalFocusManager.current
 
     var priceText by remember { mutableStateOf("") }
     var desc by remember { mutableStateOf("") }
@@ -55,22 +59,48 @@ fun ProductFormScreen(
     }
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text(if (productId == null) "Nuevo producto" else "Editar producto") }) }
+        topBar = {
+            TopAppBar(
+                title = { Text(if (productId == null) "Nuevo producto" else "Editar producto") }
+            )
+        }
     ) { padding ->
         Column(Modifier.padding(padding).padding(16.dp)) {
+
             OutlinedTextField(
                 value = priceText,
-                onValueChange = { priceText = it },
+                onValueChange = { input ->
+                    val filtered = input.filter { it.isDigit() || it == '.' || it == ',' }
+                    val out = StringBuilder()
+                    var hasSep = false
+                    for (ch in filtered) {
+                        if (ch.isDigit()) {
+                            out.append(ch)
+                        } else if ((ch == '.' || ch == ',') && !hasSep) {
+                            out.append(ch)
+                            hasSep = true
+                        }
+                    }
+                    priceText = out.toString()
+                },
                 label = { Text("Precio (obligatorio)") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Decimal,
+                    imeAction = ImeAction.Done
+                )
             )
+
             Spacer(Modifier.height(12.dp))
+
             OutlinedTextField(
                 value = desc,
                 onValueChange = { desc = it },
                 label = { Text("Descripción (opcional)") },
                 modifier = Modifier.fillMaxWidth()
             )
+
             Spacer(Modifier.height(12.dp))
 
             Row {
@@ -90,6 +120,8 @@ fun ProductFormScreen(
 
             Button(
                 onClick = {
+                    focusManager.clearFocus()
+
                     val img = imagePath
                     if (img.isNullOrBlank()) return@Button
 
@@ -109,7 +141,6 @@ fun ProductFormScreen(
                         )
                         container.productRepository.upsert(product)
 
-                        // Debounced sync (anti-saturación) :contentReference[oaicite:14]{index=14}
                         container.workScheduler.scheduleDebouncedSync(clientName = "cliente", sharedFolderId = null)
                         onBack()
                     }

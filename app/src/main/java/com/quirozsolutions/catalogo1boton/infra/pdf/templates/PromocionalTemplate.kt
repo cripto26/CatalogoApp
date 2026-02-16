@@ -7,10 +7,12 @@ import com.quirozsolutions.catalogo1boton.domain.model.displayName
 class PromocionalTemplate : PdfTemplate {
 
     override fun columns() = 1
-
     override fun itemsPerPage() = 4
 
-    override fun imageMaxSidePx() = 1200
+    override fun imageRect(itemRect: Rect): Rect {
+        val (_, imgRect) = layout(itemRect)
+        return imgRect
+    }
 
     override fun drawItem(
         canvas: Canvas,
@@ -19,26 +21,15 @@ class PromocionalTemplate : PdfTemplate {
         image: Bitmap?,
         priceText: String
     ) {
-        val pad = 18
-        val r = Rect(
-            rect.left + pad,
-            rect.top + pad,
-            rect.right - pad,
-            rect.bottom - pad
-        )
+        val (r, imgRect) = layout(rect)
 
-        // Fondo promocional
         val bg = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             color = Color.parseColor("#FFF3E0")
         }
         canvas.drawRect(r, bg)
 
-        // Imagen grande arriba
-        val imgH = (r.height() * 0.55f).toInt()
-        val imgRect = Rect(r.left + 10, r.top + 10, r.right - 10, r.top + imgH)
         image?.let { canvas.drawBitmap(it, null, imgRect, null) }
 
-        // Nombre
         val namePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             color = Color.parseColor("#BF360C")
             textSize = 22f
@@ -51,7 +42,6 @@ class PromocionalTemplate : PdfTemplate {
             namePaint
         )
 
-        // Precio MUY grande
         val pricePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             color = Color.parseColor("#D32F2F")
             textSize = 34f
@@ -63,5 +53,15 @@ class PromocionalTemplate : PdfTemplate {
             (r.bottom - 24).toFloat(),
             pricePaint
         )
+    }
+
+    private fun layout(rect: Rect): Pair<Rect, Rect> {
+        val pad = 18
+        val r = Rect(rect.left + pad, rect.top + pad, rect.right - pad, rect.bottom - pad)
+
+        val imgH = (r.height() * 0.55f).toInt()
+        val imgRect = Rect(r.left + 10, r.top + 10, r.right - 10, r.top + imgH)
+
+        return r to imgRect
     }
 }
